@@ -126,13 +126,13 @@ def check_internal_links(sources):
                 route = "."
             else:
                 route = target.lstrip("/").rstrip("/")
-                if route.endswith("/index.html"):
+                if route == "index.html" or route.endswith("/index.html"):
                     route = route[:-11] or "."
                 elif route.endswith(".html"):
                     route = route[:-5] or "."
                 elif Path(route).suffix:
                     continue  # Non-HTML assets are outside this check.
-            if route not in routes and not any(pattern.fullmatch(target) for pattern in redirects):
+            if route not in routes and not any(pattern.fullmatch(candidate) for pattern in redirects for candidate in (target, target + "/" if path.endswith("/") and target != "/" else target)):
                 errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing HTML page)")
     if errors:
         raise RuntimeError("Broken internal page links:\n" + "\n".join(errors))
