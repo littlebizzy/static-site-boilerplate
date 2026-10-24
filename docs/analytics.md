@@ -9,7 +9,8 @@ Cloudflare Web Analytics measures visits and page views using a lightweight brow
 1. Open **Web Analytics** in the Cloudflare dashboard and add your site.
 2. Copy the JavaScript beacon snippet Cloudflare provides for that site.
 3. Add the snippet to the HTML pages you want measured, typically before `</body>`. For generated sites, add it to the shared HTML template rather than editing every output file.
-4. Deploy and confirm that page views appear in the Web Analytics dashboard. Check your site's Content Security Policy if the beacon is blocked.
+4. **Update the default Content Security Policy in `_headers` first:** its `script-src 'self'` blocks Cloudflare's externally hosted beacon. Allow only the specific script and connection origins required by the current Cloudflare snippet; see [Security Headers](security-headers.md).
+5. Deploy and confirm that page views appear in the Web Analytics dashboard.
 
 Cloudflare's built-in Worker request metrics are different: they report requests handled by the Worker, including non-page requests and bots, and do not require adding a browser script. Web Analytics measures activity from browsers that execute its beacon, so the two sets of numbers will not match exactly.
 
