@@ -16,3 +16,4 @@
 | [Robots.txt](docs/robots-txt.md) | Configure crawler permissions and indexing controls. |
 | [HTML Metadata](docs/metadata.md) | Set search, social sharing, and structured data metadata. |
 | [Images](docs/images.md) | Choose image formats, optimize loading, and use responsive images. |
+| [Performance](docs/performance.md) | Keep static HTML and assets fast without extra tooling. |
