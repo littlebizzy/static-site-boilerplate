@@ -20,9 +20,9 @@ The check ignores external URLs, fragment-only links, query strings on otherwise
 
 ## Asset checks
 
-The build also checks local `src` references in `img`, `script`, `source`, `video`, and `audio` elements, plus `href` in stylesheet, icon, preload, modulepreload, and manifest `link` elements. It resolves relative URLs against the public clean page URL, then verifies references under `/assets/` exist in the root `assets/` directory. Missing files stop the build and identify the referring HTML file and line.
+The build also checks local `src` references in `img`, `script`, `source`, `video`, and `audio` elements, responsive image candidates in `srcset` on `img` and `source` (including inside `picture`), plus `href` in stylesheet, icon, preload, modulepreload, and manifest `link` elements. It resolves relative URLs against the public clean page URL, then verifies references under `/assets/` exist in the root `assets/` directory. Missing files stop the build and identify the referring HTML file and line.
 
-External URLs, dynamic resources, `srcset`, CSS `url()` references, and local paths outside `/assets/` are not checked. This is a lightweight check of deployed static assets, not a complete resource crawler.
+External URLs, dynamic resources, CSS `url()` references, and local paths outside `/assets/` are not checked. `srcset` candidates are parsed as comma-separated URL-and-descriptor entries; unusual URLs containing literal commas are not supported. This is a lightweight check of deployed static assets, not a complete resource crawler.
 
 Only HTML is copied from other top-level directories. The nested HTML scan skips the **root-level** `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory stays unpublished, including nested HTML files. A different path such as `pages/drafts/` is **not** automatically excluded. Python source files, deployment configuration, and documentation in the root `docs/` directory are not copied into the output.
 
