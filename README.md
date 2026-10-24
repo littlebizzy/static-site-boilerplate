@@ -12,3 +12,4 @@
 | [XML Sitemaps](docs/sitemaps.md) | Generate and submit XML sitemaps for published pages. |
 | [Robots.txt](docs/robots-txt.md) | Configure crawler permissions and indexing controls. |
 | [HTML Metadata](docs/metadata.md) | Set search, social sharing, and structured data metadata. |
+| [Images](docs/images.md) | Choose image formats, optimize loading, and use responsive images. |
