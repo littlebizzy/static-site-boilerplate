@@ -84,7 +84,8 @@ def check_internal_links(sources):
         parser = LinkParser()
         parser.feed(source.read_text(encoding="utf-8"))
         source_route = route_for(source)
-        base = "/" + source_route.strip("/") + "/" if source.name == "index.html" else "/" + source.relative_to(ROOT).parent.as_posix().strip("/") + "/"
+        # Resolve relative links against the public clean URL, not the source file path.
+        base = "/" if source_route == "." else "/" + source_route.strip("/") + "/"
         for line, href in parser.links:
             url = urlsplit(href.strip())
             if url.scheme or url.netloc or not url.path:
