@@ -49,12 +49,20 @@ class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.links = []
+        self.assets = []
 
     def handle_starttag(self, tag, attrs):
         if tag.lower() == "a":
             href = dict(attrs).get("href")
             if href:
                 self.links.append((self.getpos()[0], href))
+        attributes = dict(attrs)
+        if tag.lower() in {"img", "script", "source", "video", "audio"} and attributes.get("src"):
+            self.assets.append((self.getpos()[0], attributes["src"]))
+        if tag.lower() == "link" and attributes.get("href") and any(
+            item in attributes.get("rel", "").lower().split() for item in ("stylesheet", "icon", "preload", "modulepreload", "manifest")
+        ):
+            self.assets.append((self.getpos()[0], attributes["href"]))
 
 
 def redirect_sources():
@@ -80,12 +88,27 @@ def check_internal_links(sources):
     routes = {route_for(source) for source in sources}
     redirects = redirect_sources()
     errors = []
+    assets_root = ROOT / "assets"
     for source in sources:
         parser = LinkParser()
         parser.feed(source.read_text(encoding="utf-8"))
         source_route = route_for(source)
         # Resolve relative links against the public clean URL, not the source file path.
         base = "/" if source_route == "." else "/" + source_route.strip("/") + "/"
+        for line, href in parser.assets:
+            url = urlsplit(href.strip())
+            if url.scheme or url.netloc or not url.path:
+                continue
+            path = unquote(url.path)
+            if "\\\\" in path or "\\x00" in path:
+                continue
+            target = normpath(path if path.startswith("/") else base + path)
+            relative = target.lstrip("/")
+            if not relative.startswith("assets/"):
+                continue  # Only assets/ is copied as a general-purpose asset directory.
+            file = assets_root / relative[len("assets/"):]
+            if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
+                errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
         for line, href in parser.links:
             url = urlsplit(href.strip())
             if url.scheme or url.netloc or not url.path:
