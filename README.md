@@ -9,6 +9,7 @@
 | [Deploy Hooks](docs/deploy-hooks.md) | Trigger builds manually and compare deploy hooks with watch paths. |
 | [File Structure](docs/file-structure.md) | Understand the purpose of the boilerplate files and directories. |
 | [Build Process](docs/build.md) | Run clean builds and understand copied files and output. |
+| [Content Management](docs/content-management.md) | Manage published HTML, drafts, and source content without a CMS. |
 | [Redirects](docs/redirects.md) | Add permanent, temporary, and wildcard URL redirects. |
 | [Security Headers](docs/security-headers.md) | Configure and verify security headers for static assets. |
 | [404 Errors](docs/404-errors.md) | Handle missing URLs and customize the error page. |
