@@ -5,6 +5,7 @@
 | Document | Description |
 | --- | --- |
 | [Cloudflare Workers](docs/cloudflare-workers.md) | Configure GitHub builds and deploy static assets to Cloudflare Workers. |
+| [Custom Domains](docs/domains.md) | Connect a domain, configure HTTPS, and choose a preferred hostname. |
 | [File Structure](docs/file-structure.md) | Understand the purpose of the boilerplate files and directories. |
 | [Build Process](docs/build.md) | Run clean builds and understand copied files and output. |
 | [Redirects](docs/redirects.md) | Add permanent, temporary, and wildcard URL redirects. |
