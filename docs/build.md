@@ -10,7 +10,7 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 4. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 5. Copies the optional `assets/` directory, including its subfolders.
 
-Only HTML is copied from other top-level directories. The nested HTML scan skips `docs/`, `assets/`, `public/`, and hidden top-level directories. Python source files, deployment configuration, and documentation are not copied into the output.
+Only HTML is copied from other top-level directories. The nested HTML scan skips `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory, including nested HTML files, stays unpublished. Python source files, deployment configuration, and documentation are not copied into the output.
 
 ## Extending the build
 
