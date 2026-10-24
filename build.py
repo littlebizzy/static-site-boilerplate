@@ -105,7 +105,7 @@ def check_internal_links(sources):
             if url.scheme or url.netloc or not url.path:
                 continue
             path = unquote(url.path)
-            if "\\\\" in path or "\\x00" in path:
+            if "\\" in path or "\x00" in path:
                 continue
             target = normpath(path if path.startswith("/") else base + path)
             relative = target.lstrip("/")
