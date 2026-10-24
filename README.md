@@ -15,6 +15,7 @@
 | [XML Sitemaps](docs/sitemaps.md) | Generate and submit XML sitemaps for published pages. |
 | [Robots.txt](docs/robots-txt.md) | Configure crawler permissions and indexing controls. |
 | [HTML Metadata](docs/metadata.md) | Set search, social sharing, and structured data metadata. |
+| [SEO](docs/seo.md) | Keep static HTML pages discoverable and avoid indexing problems. |
 | [Images](docs/images.md) | Choose image formats, optimize loading, and use responsive images. |
 | [Performance](docs/performance.md) | Keep static HTML and assets fast without extra tooling. |
 | [Accessibility](docs/accessibility.md) | Follow practical accessibility standards for plain HTML pages. |
