@@ -8,7 +8,7 @@ from shutil import copy2, copytree, rmtree
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "public"
 STATIC_FILES = ("_headers", "_redirects", "robots.txt")
-EXCLUDED_DIRS = {"assets", "docs", "public"}
+EXCLUDED_DIRS = {"assets", "docs", "drafts", "public"}
 
 
 def html_sources():
