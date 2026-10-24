@@ -10,3 +10,4 @@
 | [Security Headers](docs/security-headers.md) | Configure and verify security headers for static assets. |
 | [404 Errors](docs/404-errors.md) | Handle missing URLs and customize the error page. |
 | [XML Sitemaps](docs/sitemaps.md) | Generate and submit XML sitemaps for published pages. |
+| [Robots.txt](docs/robots-txt.md) | Configure crawler permissions and indexing controls. |
