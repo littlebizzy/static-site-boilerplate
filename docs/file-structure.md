@@ -13,4 +13,17 @@
 | `public/` | Generated deployment directory; do not edit files here directly. |
 | `docs/` | Project documentation; not copied into the deployed site. |
 
-Run `python3 build.py` to prepare the site. By default, the script copies HTML files from the repository root, the three static configuration files, and everything under `assets/` if present. Update the script if your site needs additional folders or generated pages.
+## Page layouts
+
+Both folder-based and file-based HTML pages work, including nested pages:
+
+| Source file | Clean URL |
+| --- | --- |
+| `about/index.html` | `/about/` |
+| `about.html` | `/about/` |
+| `guides/install/index.html` | `/guides/install/` |
+| `guides/install.html` | `/guides/install/` |
+
+Choose **one** representation for each URL; do not publish both `about.html` and `about/index.html`. The configured Cloudflare Workers `auto-trailing-slash` setting handles clean URLs.
+
+Run `python3 build.py` to copy root and nested HTML pages, static configuration files, and optional `assets/` into `public/`. The script excludes `docs/`, `public/`, `assets/`, and hidden root directories when scanning for nested HTML; assets are copied separately. Extend the script if your site needs other generated content.
