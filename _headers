@@ -1,0 +1,11 @@
+# Security headers for HTTPS static sites.
+# Place this file in the deployed static assets directory.
+# Adjust the CSP if using inline code, third-party services, or embedded content.
+# Review HSTS before using this template on a domain without reliable HTTPS.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests
