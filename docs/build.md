@@ -13,9 +13,9 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 
 ## Internal link checks
 
-Both absolute links such as `/about/` and relative links such as `../about/` are checked against published HTML files. Both `about.html` and `about/index.html` can satisfy the clean `/about/` route (but cannot coexist).
+Both absolute links such as `/about/` and relative links such as `../about/` are checked against published HTML files. Both `about.html` and `about/index.html` can satisfy the clean `/about/` route (but cannot coexist). Active local 301/302/303/307/308 rules in `_redirects` also count as valid destinations, including simple `/section/*` wildcard sources. Commented rules are ignored; more complex redirect patterns are not interpreted.
 
-The check ignores external URLs, fragment-only links, query strings on otherwise valid URLs, and non-HTML asset paths. It does not fetch remote URLs, validate fragment IDs, or inspect JavaScript-generated links. A local HTML link intended to be handled by a redirect rather than an actual published page will fail validation; link directly to the destination page instead.
+The check ignores external URLs, fragment-only links, query strings on otherwise valid URLs, and non-HTML asset paths. It does not fetch remote URLs, validate fragment IDs, or inspect JavaScript-generated links. The check recognizes redirect source paths but does not verify that a redirect's destination exists or that the redirect will work after deployment. Prefer linking directly to the final page when practical.
 
 Only HTML is copied from other top-level directories. The nested HTML scan skips the **root-level** `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory stays unpublished, including nested HTML files. A different path such as `pages/drafts/` is **not** automatically excluded. Python source files, deployment configuration, and documentation in the root `docs/` directory are not copied into the output.
 
