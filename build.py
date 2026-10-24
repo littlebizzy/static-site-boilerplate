@@ -4,6 +4,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 from posixpath import normpath
+from re import compile, escape
 from shutil import copy2, copytree, rmtree
 from urllib.parse import unquote, urlsplit
 
@@ -56,8 +57,28 @@ class LinkParser(HTMLParser):
                 self.links.append((self.getpos()[0], href))
 
 
+def redirect_sources():
+    """Read active local redirect patterns; ignore comments and external sources."""
+    redirects = ROOT / "_redirects"
+    patterns = []
+    if redirects.is_file():
+        for line in redirects.read_text(encoding="utf-8").splitlines():
+            fields = line.split()
+            if len(fields) < 3 or fields[0].startswith("#"):
+                continue
+            source, _, status = fields[:3]
+            if not source.startswith("/") or status not in {"301", "302", "303", "307", "308"}:
+                continue
+            if source.endswith("/*"):
+                patterns.append(compile("^" + escape(source[:-1]) + ".*$"))
+            elif "*" not in source and ":" not in source:
+                patterns.append(compile("^" + escape(source) + "$"))
+    return patterns
+
+
 def check_internal_links(sources):
     routes = {route_for(source) for source in sources}
+    redirects = redirect_sources()
     errors = []
     for source in sources:
         parser = LinkParser()
@@ -82,7 +103,7 @@ def check_internal_links(sources):
                     route = route[:-5] or "."
                 elif Path(route).suffix:
                     continue  # Non-HTML assets are outside this check.
-            if route not in routes:
+            if route not in routes and not any(pattern.fullmatch(target) for pattern in redirects):
                 errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing HTML page)")
     if errors:
         raise RuntimeError("Broken internal page links:\n" + "\n".join(errors))
