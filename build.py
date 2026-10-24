@@ -57,6 +57,11 @@ class LinkParser(HTMLParser):
             if href:
                 self.links.append((self.getpos()[0], href))
         attributes = dict(attrs)
+        if tag.lower() in {"img", "source"} and attributes.get("srcset"):
+            for candidate in attributes["srcset"].split(","):
+                parts = candidate.strip().split()
+                if parts:
+                    self.assets.append((self.getpos()[0], parts[0]))
         if tag.lower() in {"img", "script", "source", "video", "audio"} and attributes.get("src"):
             self.assets.append((self.getpos()[0], attributes["src"]))
         if tag.lower() == "link" and attributes.get("href") and any(
