@@ -26,4 +26,4 @@ Both folder-based and file-based HTML pages work, including nested pages:
 
 Choose **one** representation for each URL; do not publish both `about.html` and `about/index.html`. The configured Cloudflare Workers `auto-trailing-slash` setting handles clean URLs.
 
-Run `python3 build.py` to copy root and nested HTML pages, static configuration files, and optional `assets/` into `public/`. The script excludes `docs/`, `public/`, `assets/`, and hidden root directories when scanning for nested HTML; assets are copied separately. Extend the script if your site needs other generated content.
+For copying, exclusions, and clean output behavior, see [Build Process](build.md).
