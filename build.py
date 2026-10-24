@@ -2,7 +2,7 @@
 """Copy static site files into the Cloudflare deployment directory."""
 
 from pathlib import Path
-from shutil import copy2, copytree
+from shutil import copy2, copytree, rmtree
 
 
 ROOT = Path(__file__).resolve().parent
@@ -12,7 +12,11 @@ EXCLUDED_DIRS = {"assets", "docs", "public"}
 
 
 def main():
-    OUTPUT.mkdir(exist_ok=True)
+    if OUTPUT.is_symlink():
+        raise RuntimeError("Refusing to clean a symlinked public/ directory")
+    if OUTPUT.exists():
+        rmtree(OUTPUT)
+    OUTPUT.mkdir()
 
     for name in STATIC_FILES:
         source = ROOT / name
