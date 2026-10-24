@@ -12,6 +12,7 @@
 | [Content Management](docs/content-management.md) | Manage published HTML, drafts, and source content without a CMS. |
 | [Redirects](docs/redirects.md) | Add permanent, temporary, and wildcard URL redirects. |
 | [Security Headers](docs/security-headers.md) | Configure and verify security headers for static assets. |
+| [Caching](docs/caching.md) | Understand browser and Cloudflare caching, cache durations, and versioned assets. |
 | [404 Errors](docs/404-errors.md) | Handle missing URLs and customize the error page. |
 | [XML Sitemaps](docs/sitemaps.md) | Generate and submit XML sitemaps for published pages. |
 | [Robots.txt](docs/robots-txt.md) | Configure crawler permissions and indexing controls. |
