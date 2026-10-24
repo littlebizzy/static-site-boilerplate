@@ -1,0 +1,11 @@
+# Cloudflare Workers static asset redirects.
+# Format: source destination status
+
+# Permanent redirect (301)
+# /old-page/ /new-page/ 301
+
+# Temporary redirect (302)
+# /temporary-page/ /new-page/ 302
+
+# Wildcard redirect (301)
+# /old-section/* /new-section/:splat 301
