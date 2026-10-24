@@ -1,4 +1,4 @@
-# static-site-guidelines
+# Static Site Boilerplate
 
 ## Documentation
 
