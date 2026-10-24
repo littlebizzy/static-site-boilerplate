@@ -122,6 +122,12 @@ def check_internal_links(sources):
             if "\\" in path or "\x00" in path:
                 continue
             target = normpath(path if path.startswith("/") else base + path)
+            relative = target.lstrip("/")
+            if relative.startswith("assets/"):
+                file = assets_root / relative[len("assets/"):]
+                if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
+                    errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
+                continue
             if target == "/":
                 route = "."
             else:
