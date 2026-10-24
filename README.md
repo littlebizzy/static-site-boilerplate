@@ -17,3 +17,4 @@
 | [HTML Metadata](docs/metadata.md) | Set search, social sharing, and structured data metadata. |
 | [Images](docs/images.md) | Choose image formats, optimize loading, and use responsive images. |
 | [Performance](docs/performance.md) | Keep static HTML and assets fast without extra tooling. |
+| [Launch Checklist](docs/launch-checklist.md) | Verify deployment, routing, metadata, and published files before launch. |
