@@ -8,3 +8,4 @@
 | [File Structure](docs/file-structure.md) | Understand the purpose of the boilerplate files and directories. |
 | [Redirects](docs/redirects.md) | Add permanent, temporary, and wildcard URL redirects. |
 | [Security Headers](docs/security-headers.md) | Configure and verify security headers for static assets. |
+| [404 Errors](docs/404-errors.md) | Handle missing URLs and customize the error page. |
