@@ -1,0 +1,19 @@
+# Build Process
+
+Run `python3 build.py` from the repository root. Cloudflare Workers uses the same command before deploying the contents of `public/`.
+
+## What the script does
+
+1. Deletes the previous `public/` directory and recreates it, so removed pages and assets do not linger. It refuses to clean a symlinked `public/` directory.
+2. Copies root-level `*.html` files, including `index.html` and `404.html`.
+3. Copies nested HTML files while preserving paths, supporting both `about.html` and `about/index.html` (choose one per URL).
+4. Copies `_headers`, `_redirects`, and `robots.txt` when present.
+5. Copies the optional `assets/` directory, including its subfolders.
+
+Only HTML is copied from other top-level directories. The nested HTML scan skips `docs/`, `assets/`, `public/`, and hidden top-level directories. Python source files, deployment configuration, and documentation are not copied into the output.
+
+## Extending the build
+
+Add site-specific generation steps to `build.py` **after cleaning `public/`** and before deployment. For example, generate published pages or a `public/sitemap.xml` file. Do not write source files into `public/` by hand: the next build deletes them.
+
+See [File Structure](file-structure.md) for example page layouts and [Cloudflare Workers Deployment](cloudflare-workers.md) for deployment settings.
