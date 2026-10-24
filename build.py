@@ -89,11 +89,22 @@ def redirect_sources():
     return patterns
 
 
+def check_asset(target, source, line, href, errors):
+    """Check a deployed /assets/ path; return whether it is an asset reference."""
+    relative = target.lstrip("/")
+    if not relative.startswith("assets/"):
+        return False
+    assets_root = ROOT / "assets"
+    file = assets_root / relative[len("assets/"):]
+    if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
+        errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
+    return True
+
+
 def check_internal_links(sources):
     routes = {route_for(source) for source in sources}
     redirects = redirect_sources()
     errors = []
-    assets_root = ROOT / "assets"
     for source in sources:
         parser = LinkParser()
         parser.feed(source.read_text(encoding="utf-8"))
@@ -108,12 +119,7 @@ def check_internal_links(sources):
             if "\\" in path or "\x00" in path:
                 continue
             target = normpath(path if path.startswith("/") else base + path)
-            relative = target.lstrip("/")
-            if not relative.startswith("assets/"):
-                continue  # Only assets/ is copied as a general-purpose asset directory.
-            file = assets_root / relative[len("assets/"):]
-            if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
-                errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
+            check_asset(target, source, line, href, errors)
         for line, href in parser.links:
             url = urlsplit(href.strip())
             if url.scheme or url.netloc or not url.path:
@@ -122,11 +128,7 @@ def check_internal_links(sources):
             if "\\" in path or "\x00" in path:
                 continue
             target = normpath(path if path.startswith("/") else base + path)
-            relative = target.lstrip("/")
-            if relative.startswith("assets/"):
-                file = assets_root / relative[len("assets/"):]
-                if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
-                    errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
+            if check_asset(target, source, line, href, errors):
                 continue
             if target == "/":
                 route = "."
