@@ -4,7 +4,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 from posixpath import normpath
-from re import compile, escape, finditer, sub
+from re import compile, escape, finditer
 from shutil import copy2, copytree, rmtree
 from urllib.parse import unquote, urlsplit
 
@@ -108,10 +108,12 @@ def check_css_assets(errors):
         return
     for source in sorted(assets.rglob("*.css")):
         css = source.read_text(encoding="utf-8")
-        # Avoid treating URLs in ordinary CSS comments as live references.
-        css = sub(r"/\*.*?\*/", lambda match: "\n" * match.group().count("\n"), css, flags=16)
-        for match in finditer(r"""url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s]*))\s*\)""", css, flags=2):
-            href = next((part for part in match.groups() if part is not None), "").strip()
+        # Consume comments and quoted strings before matching real url() tokens.
+        tokens = r"""(?P<comment>/\*[\s\S]*?\*/)|(?P<url>url\(\s*(?:"([^"]*)"|'([^']*)'|([^\s)]*))\s*\))|(?P<string>"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')"""
+        for match in finditer(tokens, css, flags=2):
+            if match.group("url") is None:
+                continue
+            href = next((part for part in match.groups()[2:5] if part is not None), "").strip()
             url = urlsplit(href)
             if url.scheme or url.netloc or not url.path:
                 continue
@@ -167,7 +169,7 @@ def check_internal_links(sources):
                 errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing HTML page)")
     check_css_assets(errors)
     if errors:
-        raise RuntimeError("Broken internal page links:\n" + "\n".join(errors))
+        raise RuntimeError("Broken internal references:\n" + "\n".join(errors))
 
 
 def main():
