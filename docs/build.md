@@ -30,9 +30,9 @@ Only HTML pages are published from other top-level directories. The HTML scan sk
 
 ## Shared templates
 
-Place `<!-- template: base -->` before the doctype in an HTML page to use the shared layout. Keep the page's `<head>` for metadata and `<main>` for content, but omit repeated header and footer markup. The build inserts both sections into `templates/base.html` with `templates/header.html` and `templates/footer.html`. Pages without the marker are copied unchanged.
+Place `<!-- template: base -->` before the doctype in an HTML page to use the shared layout. Keep the page's `<head>` and `<body>` (including `<main>`), but omit repeated header and footer markup. The build preserves the body attributes and all body content, including scripts and elements outside `<main>`, between the shared header and footer. Pages without the marker are copied unchanged.
 
-Templates are not published as separate files. Marked pages must have a `<head>` and `<main>`, and missing templates or layout placeholders stop the build before `public/` is cleaned. Link checks examine assembled HTML, so line numbers for marked pages refer to the generated output.
+Templates are not published as separate files. Marked pages must have `<html lang="...">`, `<head>`, `<body>`, and `<main>` elements; missing templates or layout placeholders stop the build before `public/` is cleaned. Link checks examine assembled HTML, so line numbers for marked pages refer to the generated output.
 
 ## Extending the build
 
