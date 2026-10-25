@@ -1,5 +1,13 @@
 # Static Site Boilerplate
 
+A minimal HTML-first starter for static sites deployed with Cloudflare Workers, without a framework or CMS.
+
+## Quick Start
+
+1. Edit `index.html` and add pages or files under `assets/` as needed.
+2. Run `python3 build.py` to generate `public/`. Do not edit generated files directly.
+3. Set a unique Worker `name` in `wrangler.jsonc`, then follow [Cloudflare Workers](docs/cloudflare-workers.md) to connect your repository and deploy.
+
 ## Documentation
 
 | Document | Description |
