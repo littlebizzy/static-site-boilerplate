@@ -1,6 +1,6 @@
 # 404 Errors and Custom Error Pages
 
-Cloudflare Workers uses `not_found_handling: "404-page"` in `wrangler.jsonc` to serve the built `public/404.html` when a page is missing, with an HTTP 404 status. `build.py` copies the root `404.html` into `public/`.
+Cloudflare Workers uses `not_found_handling: "404-page"` in `wrangler.jsonc` to serve the built `public/404.html` when a page is missing, with an HTTP 404 status. `build.py` assembles the root `404.html` fragment with the shared templates into `public/404.html`. A standalone replacement `404.html` without front matter would be copied unchanged.
 
 ## Customize the template
 
