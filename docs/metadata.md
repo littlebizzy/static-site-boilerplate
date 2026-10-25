@@ -30,6 +30,19 @@ A shared metadata template is recommended for multi-page sites: common markup st
 
 Edit the shared template for site-wide head markup; edit each fragment's metadata for page-specific values. Do not repeat an entire `<head>` in fragments or hardcode one page's canonical URL across the site. Additional fields, such as a Twitter card or a different `og:type`, require site-specific template/builder changes. Standalone HTML files manage their own `<head>` and are copied unchanged.
 
+## Multilingual pages (optional)
+
+Set each page's `lang` field to its content language (for example, `en`, `th`, or `en-US`), and translate its title, description, and other page-specific metadata. Language versions should generally have their own canonical URLs rather than all pointing to the English page.
+
+When equivalent translated pages exist, identify them with reciprocal `hreflang` links in each version's `<head>`, including a link to itself. For example, the English and Thai homepages would both include:
+
+```html
+<link rel="alternate" hreflang="en" href="https://example.com/">
+<link rel="alternate" hreflang="th" href="https://example.com/th/">
+```
+
+Use real absolute URLs, and add `x-default` only if a language-neutral fallback is appropriate. The starter does not generate `hreflang`; multilingual sites can extend the shared head template and builder with page-specific alternate URLs. Do not add these tags when there are no translated equivalents. See [Google's localized-pages guidance](https://developers.google.com/search/docs/specialty/international/localized-versions).
+
 ## JSON-LD and schema.org
 
 JSON-LD expresses structured data using schema.org types, typically in a `<script type="application/ld+json">` element in the `<head>` or `<body>`. Unlike ordinary meta tags, it describes entities and their relationships. The default builder **does not generate JSON-LD automatically**.
