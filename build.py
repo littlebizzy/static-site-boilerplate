@@ -40,7 +40,7 @@ def check_conflicts(sources):
     conflicts = {route: paths for route, paths in routes.items() if len(paths) > 1}
     if conflicts:
         details = "\n".join(
-            f"/{route}/: " + ", ".join(str(path) for path in paths)
+            f"/{route}: " + ", ".join(str(path) for path in paths)
             for route, paths in sorted(conflicts.items())
         )
         raise RuntimeError("Conflicting HTML routes:\n" + details)
@@ -157,9 +157,10 @@ def check_internal_links(sources):
     for source in sources:
         parser = LinkParser()
         parser.feed(source.read_text(encoding="utf-8"))
-        source_route = route_for(source)
-        # Resolve relative links against the public clean URL, not the source file path.
-        base = "/" if source_route == "." else "/" + source_route.strip("/") + "/"
+        parent = source.relative_to(ROOT).parent
+        # Flat page.html URLs omit the slash; index.html folders retain it.
+        # Both resolve relative links from their containing URL directory.
+        base = "/" if parent == Path(".") else "/" + parent.as_posix() + "/"
         for line, href in parser.assets:
             url = urlsplit(href.strip())
             if url.scheme or url.netloc or not url.path:
