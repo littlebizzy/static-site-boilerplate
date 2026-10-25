@@ -14,7 +14,9 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 ## Before deploying
 
 - Keep the defaults for a simple site with locally hosted assets and no inline scripts or styles.
-- Adjust `Content-Security-Policy` if the site uses inline code, external fonts, analytics, APIs, or embeds. Avoid allowing all sources just to silence errors. The current policy blocks inline scripts and styles.
+- The default CSP allows the Cloudflare Web Analytics script from `https://static.cloudflareinsights.com`. Its `connect-src 'self'` also permits automatic injection to report to the site's own `/cdn-cgi/rum` endpoint. This allowance does not turn on analytics.
+- Manually embedded Cloudflare Web Analytics beacons report to `https://cloudflareinsights.com` instead; add that origin to `connect-src` if using manual installation. See [Analytics](analytics.md).
+- Adjust `Content-Security-Policy` if the site uses inline code, external fonts, other analytics, APIs, or embeds. Avoid allowing all sources just to silence errors. The current policy blocks inline scripts and styles.
 - Review `Strict-Transport-Security` before deploying. Only retain it when HTTPS is reliably available; browsers remember the setting until it expires.
 - Review framing restrictions if the site must be embedded elsewhere. `X-Frame-Options` and CSP `frame-ancestors` currently limit framing to the same origin.
 
