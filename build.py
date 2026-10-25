@@ -73,27 +73,32 @@ def render_page(source):
         raise ValueError(f"{source.relative_to(ROOT)}: templated pages need an <html lang=\"...\"> attribute")
 
     head = search(r"(?is)<head\b[^>]*>.*?</head\s*>", html)
-    main = search(r"(?is)<main\b[^>]*>.*?</main\s*>", html)
-    if not head or not main:
-        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need one <head> and <main>")
+    body = search(r"(?is)<body\b([^>]*)>(.*)</body\s*>", html)
+    main = search(r"(?is)<main\b[^>]*>.*?</main\s*>", body.group(2)) if body else None
+    if not head or not body or not main:
+        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need a <head>, <body>, and <main>")
 
     templates = ROOT / "templates"
     sections = {
         "lang": lang.group(2).strip(),
         "head": head.group(0),
+        "body_attributes": body.group(1),
         "header": (templates / "header.html").read_text(encoding="utf-8"),
-        "content": main.group(0),
+        "content": body.group(2),
         "footer": (templates / "footer.html").read_text(encoding="utf-8"),
     }
     rendered = (templates / "base.html").read_text(encoding="utf-8")
     # Accept the original sample base as well as the language placeholder.
     if "{{ lang }}" not in rendered and '<html lang="en">' in rendered:
         rendered = rendered.replace('<html lang="en">', '<html lang="{{ lang }}">', 1)
+    # Accept the original sample body tag as well as the attributes placeholder.
+    if "{{ body_attributes }}" not in rendered and "<body>" in rendered:
+        rendered = rendered.replace("<body>", "<body{{ body_attributes }}>", 1)
     for name, section in sections.items():
         token = "{{ " + name + " }}"
         if rendered.count(token) != 1:
             raise ValueError(f"templates/base.html must contain exactly one {token}")
-        rendered = rendered.replace(token, section.strip())
+        rendered = rendered.replace(token, section if name == "body_attributes" else section.strip())
     return rendered
 
 
