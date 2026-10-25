@@ -34,6 +34,6 @@ The example `index.html` and `404.html` begin with `---` metadata and contain on
 
 A standalone file with its own doctype, `html`, `head`, and `body` (and no starting `---` metadata block) is copied unchanged. The builder never extracts pieces from a complete HTML document. Both page formats use the same clean-URL mapping.
 
-Keep unpublished HTML in `drafts/` or `templates/` folders at any depth, or prefix an HTML filename with `_` or `.`. For example, `pages/drafts/about.html` and `_notes.html` are not published. Move finished pages to normal filenames and locations when ready. Keep draft-only assets out of `assets/`: its ordinary files are copied, but filenames beginning with `_` or `.` are excluded.
+Keep unpublished HTML in `drafts/` or `templates/` folders at any depth, or prefix a file or directory name with `_` or `.`. For example, `pages/drafts/about.html`, `pages/_drafts/about.html`, and `_notes.html` are not published. Move finished pages to normal filenames and locations when ready. The same prefix rule skips files and directories under `assets/`, so an `assets/_originals/` folder stays unpublished. Root `_headers` and `_redirects` are special Cloudflare files copied explicitly.
 
 For copying, exclusions, and clean output behavior, see [Build Process](build.md).
