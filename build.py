@@ -22,7 +22,11 @@ def unpublished_filename(name):
 
 
 def ignored_asset_files(directory, names):
-    return [name for name in names if unpublished_filename(name) and (Path(directory) / name).is_file()]
+    return [
+        name for name in names
+        if (name in UNPUBLISHED_FOLDERS and (Path(directory) / name).is_dir())
+        or (unpublished_filename(name) and (Path(directory) / name).is_file())
+    ]
 
 
 def html_sources():
@@ -230,7 +234,12 @@ def main():
             copy2(source, OUTPUT / name)
 
     for source in ROOT.iterdir():
-        if source.is_file() and source.suffix.lower() in ROOT_ASSET_EXTENSIONS and not unpublished_filename(source.name):
+        if (
+            source.is_file()
+            and source.name not in STATIC_FILES
+            and source.suffix.lower() in ROOT_ASSET_EXTENSIONS
+            and not unpublished_filename(source.name)
+        ):
             copy2(source, OUTPUT / source.name)
 
     for source in sources:
