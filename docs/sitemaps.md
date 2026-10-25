@@ -1,24 +1,27 @@
 # XML Sitemaps
 
-Generate `sitemap.xml` from the **published, canonical URLs** during each site build so it stays in sync with the deployed pages. The boilerplate's `build.py` assembles HTML fragments and copies standalone pages and assets, but does not generate a sitemap; add that step when the site has real pages and a known production domain.
+When the production HTTPS `url` is set in `site.json`, every `python3 build.py` run generates `public/sitemap.xml` automatically. Leave the URL empty for the unconfigured starter; a sitemap cannot contain valid absolute URLs without a domain.
 
-## What to include
+The sitemap includes the clean URLs of published HTML pages, including standalone HTML. It excludes drafts, the 404 page, redirect sources, pages marked `noindex`, and pages whose canonical URL points elsewhere.
 
-- Use absolute HTTPS URLs for indexable published pages.
-- Exclude drafts, 404 pages, redirects, duplicate URLs, and `noindex` pages.
-- Use `<lastmod>` only when a page's content actually changed; do not stamp every URL with the build time.
-- Write the resulting XML into `public/sitemap.xml` after generating the pages.
+## Modification dates
 
-A minimal sitemap looks like this:
+Each `<lastmod>` is the date of the most recent Git commit affecting that page's source HTML file, not the current build or deployment date. Dates use the `YYYY-MM-DD` format.
+
+A complete Git history must be available to retrieve these dates. If the build uses a shallow checkout, runs outside a Git repository, or a page has no recorded commit, that page remains in the sitemap without `<lastmod>`. This avoids publishing misleading dates. Changes made only to shared templates or site settings do not update the source page's date.
+
+## Example
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://example.com/</loc></url>
-  <url><loc>https://example.com/about/</loc></url>
+  <url>
+    <loc>https://example.com/</loc>
+    <lastmod>2026-10-25</lastmod>
+  </url>
 </urlset>
 ```
 
-For larger sites, split files at **50,000 URLs or 50 MB uncompressed**, whichever comes first, and list them in a sitemap index (`sitemap_index.xml`).
+The sitemap format supports up to **50,000 URLs or 50 MB uncompressed** per file. Sites beyond that size need split sitemaps and a sitemap index.
 
-Submit the sitemap URL in Google Search Console and Bing Webmaster Tools. A `Sitemap:` line in `robots.txt` is optional; this boilerplate deliberately leaves it out.
+Submit `https://your-domain/sitemap.xml` in Google Search Console or Bing Webmaster Tools. A `Sitemap:` entry in `robots.txt` is optional and is not added by the starter.
