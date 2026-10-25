@@ -1,6 +1,6 @@
 # Static Site Boilerplate
 
-A minimal HTML-first starter for static sites deployed with Cloudflare Workers, without a framework or CMS.
+A minimal HTML-first starter for building and deploying static sites with Cloudflare Workers. Pages and assets stay in the repository, a small Python script prepares the deployment files, and no framework or CMS is required.
 
 ## Quick Start
 
@@ -10,7 +10,7 @@ A minimal HTML-first starter for static sites deployed with Cloudflare Workers, 
 
 ## Documentation
 
-These guides cover the boilerplate's file structure, deployment, content management, security, and site maintenance.
+These guides explain how to organize pages and assets, deploy with Cloudflare Workers, manage content, and configure redirects, security headers, caching, and SEO. Use the relevant topics as you customize and maintain your site.
 
 | Document | Description |
 | --- | --- |
