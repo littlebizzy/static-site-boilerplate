@@ -1,18 +1,18 @@
 ---
-title: Home | Site Name
-description: A simple starting point for a static website built with HTML and MiddleClass CSS.
+title: Home | {{ site_name }}
+description: {{ site_description }}
 lang: en
 ---
 <main>
     <div class="container">
       <div class="reading-width">
         <p class="eyebrow">Static site starter</p>
-        <h1>Welcome to Site Name</h1>
+        <h1>Welcome to {{ site_name }}</h1>
         <p>This is a simple starting point for your website. Replace the example content, add your own pages, and make it yours.</p>
 
         <h2>Getting started</h2>
         <ol>
-          <li>Edit this homepage and update the site name.</li>
+          <li>Edit <code>site.json</code> to set the site name and description.</li>
           <li>Add HTML pages and place images, CSS, or scripts in <code>assets/</code>.</li>
           <li>Run <code>python3 build.py</code> to prepare the site for deployment.</li>
         </ol>
