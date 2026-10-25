@@ -24,11 +24,13 @@ image: https://example.com/assets/share.png
 
 Open Graph tags are generated automatically: `og:title` uses `title`, `og:description` uses `description` when present, `og:url` uses `canonical` when present, and `og:type` defaults to `website`. The optional `image` field produces `og:image` only when supplied; use an absolute, publicly accessible image URL.
 
+The shared head adds `<meta name="twitter:card" content="summary">` for a simple link preview. It reuses the existing Open Graph title and description, without duplicate Twitter-specific fields or a required image. The final preview appearance depends on the platform.
+
 ## Shared head template
 
-A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter.
+A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, Twitter summary card, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter.
 
-Edit the shared template for site-wide head markup; edit each fragment's metadata for page-specific values. Do not repeat an entire `<head>` in fragments or hardcode one page's canonical URL across the site. Additional fields, such as a Twitter card or a different `og:type`, require site-specific template/builder changes. Standalone HTML files manage their own `<head>` and are copied unchanged.
+Edit the shared template for site-wide head markup; edit each fragment's metadata for page-specific values. Do not repeat an entire `<head>` in fragments or hardcode one page's canonical URL across the site. Other platform-specific fields or a different `og:type` require site-specific template/builder changes. Standalone HTML files manage their own `<head>` and are copied unchanged.
 
 ## Multilingual pages (optional)
 
