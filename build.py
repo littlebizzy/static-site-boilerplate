@@ -17,15 +17,23 @@ EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
 
 
+def unpublished_filename(name):
+    return name.startswith(("_", "."))
+
+
+def ignored_asset_files(directory, names):
+    return [name for name in names if unpublished_filename(name) and (Path(directory) / name).is_file()]
+
+
 def html_sources():
-    sources = [path for path in ROOT.glob("*.html") if path.is_file() and not path.name.startswith(("_", "."))]
+    sources = [path for path in ROOT.glob("*.html") if path.is_file() and not unpublished_filename(path.name)]
     for directory in ROOT.iterdir():
         if not directory.is_dir() or directory.name in EXCLUDED_DIRS or directory.name.startswith("."):
             continue
         sources.extend(
             path for path in directory.rglob("*.html")
             if path.is_file()
-            and not path.name.startswith(("_", "."))
+            and not unpublished_filename(path.name)
             and UNPUBLISHED_FOLDERS.isdisjoint(path.relative_to(ROOT).parts[:-1])
         )
     return sorted(sources)
@@ -120,10 +128,10 @@ def check_asset(target, source, line, href, errors):
     if relative.startswith("assets/"):
         assets_root = ROOT / "assets"
         file = assets_root / relative[len("assets/"):]
-        exists = file.is_file() and file.resolve().is_relative_to(assets_root.resolve())
+        exists = file.is_file() and not unpublished_filename(file.name) and file.resolve().is_relative_to(assets_root.resolve())
     elif "/" not in relative and Path(relative).suffix.lower() in ROOT_ASSET_EXTENSIONS:
         file = ROOT / relative
-        exists = file.is_file()
+        exists = file.is_file() and not unpublished_filename(file.name)
     else:
         return False
     if not exists:
@@ -137,6 +145,8 @@ def check_css_assets(errors):
     if not assets.is_dir():
         return
     for source in sorted(assets.rglob("*.css")):
+        if unpublished_filename(source.name):
+            continue
         css = source.read_text(encoding="utf-8")
         # Consume comments and quoted strings before matching real url() tokens.
         tokens = r"""(?P<comment>/\*[\s\S]*?\*/)|(?P<url>url\(\s*(?:"([^"]*)"|'([^']*)'|([^\s)]*))\s*\))|(?P<string>"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')"""
@@ -220,7 +230,7 @@ def main():
             copy2(source, OUTPUT / name)
 
     for source in ROOT.iterdir():
-        if source.is_file() and source.suffix.lower() in ROOT_ASSET_EXTENSIONS and source.name not in STATIC_FILES:
+        if source.is_file() and source.suffix.lower() in ROOT_ASSET_EXTENSIONS and not unpublished_filename(source.name):
             copy2(source, OUTPUT / source.name)
 
     for source in sources:
@@ -230,7 +240,7 @@ def main():
 
     assets = ROOT / "assets"
     if assets.is_dir():
-        copytree(assets, OUTPUT / "assets", dirs_exist_ok=True)
+        copytree(assets, OUTPUT / "assets", ignore=ignored_asset_files, dirs_exist_ok=True)
 
     print("Static files copied to public/")
 
