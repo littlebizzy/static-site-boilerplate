@@ -24,7 +24,7 @@ The build checks `<a href>` links into `/assets/` as well, including downloads s
 
 Stylesheets under `assets/` are also scanned for simple local CSS `url()` references, with relative URLs resolved from the stylesheet directory. CSS comments, external URLs, data URLs, and `@import` rules are ignored. This is not a complete CSS parser; complex escaped URLs are not supported.
 
-External URLs, dynamic resources, and local paths outside `/assets/` are not checked. `srcset` candidates are parsed as comma-separated URL-and-descriptor entries; unusual URLs containing literal commas are not supported. This is a lightweight check of deployed static assets, not a complete resource crawler.
+External URLs, dynamic resources, and local paths outside `/assets/` are not checked. `srcset` candidates are parsed as URL tokens followed by optional descriptors, preserving commas inside URL tokens, including data URLs. This is a lightweight check of deployed static assets, not a complete resource crawler.
 
 Only HTML is copied from other top-level directories. The nested HTML scan skips the **root-level** `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory stays unpublished, including nested HTML files. A different path such as `pages/drafts/` is **not** automatically excluded. Python source files, deployment configuration, and documentation in the root `docs/` directory are not copied into the output.
 
