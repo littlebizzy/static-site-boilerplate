@@ -6,7 +6,7 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 
 1. Collects root-level and nested HTML files and checks for conflicting public routes **before** touching `public/`. For example, `about.html` and `about/index.html` cannot coexist because both represent `/about/`.
 2. Checks links in HTML `<a href="...">` elements for missing internal pages. If a destination is missing, the build stops and reports the source file, line, and URL before clearing `public/`.
-3. Checks local image, script, stylesheet, and other supported asset references under `assets/` for missing files before cleaning the output.
+3. Checks local image, script, stylesheet, CSS `url()`, and other supported asset references under `assets/` for missing files before cleaning the output.
 4. Deletes the previous `public/` directory and recreates it, so removed pages and assets do not linger. It refuses to clean a symlinked `public/` directory.
 5. Copies root-level `*.html` files, including `index.html` and `404.html`, and nested HTML files while preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
@@ -22,7 +22,9 @@ The check ignores external URLs, fragment-only links, query strings on otherwise
 
 The build checks `<a href>` links into `/assets/` as well, including downloads such as PDFs, ZIP archives, and images. It also checks local `src` references in `img`, `script`, `source`, `video`, and `audio` elements, responsive image candidates in `srcset` on `img` and `source` (including inside `picture`), plus `href` in stylesheet, icon, preload, modulepreload, and manifest `link` elements. It resolves relative URLs against the public clean page URL, then verifies references under `/assets/` exist in the root `assets/` directory. Missing files stop the build and identify the referring HTML file and line.
 
-External URLs, dynamic resources, CSS `url()` references, and local paths outside `/assets/` are not checked. `srcset` candidates are parsed as comma-separated URL-and-descriptor entries; unusual URLs containing literal commas are not supported. This is a lightweight check of deployed static assets, not a complete resource crawler.
+Stylesheets under `assets/` are also scanned for simple local CSS `url()` references, with relative URLs resolved from the stylesheet directory. CSS comments, external URLs, data URLs, and `@import` rules are ignored. This is not a complete CSS parser; complex escaped URLs are not supported.
+
+External URLs, dynamic resources, and local paths outside `/assets/` are not checked. `srcset` candidates are parsed as comma-separated URL-and-descriptor entries; unusual URLs containing literal commas are not supported. This is a lightweight check of deployed static assets, not a complete resource crawler.
 
 Only HTML is copied from other top-level directories. The nested HTML scan skips the **root-level** `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory stays unpublished, including nested HTML files. A different path such as `pages/drafts/` is **not** automatically excluded. Python source files, deployment configuration, and documentation in the root `docs/` directory are not copied into the output.
 
