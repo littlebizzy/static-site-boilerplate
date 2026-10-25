@@ -9,6 +9,7 @@
 | `_redirects` | Commented examples for optional URL redirects. |
 | `wrangler.jsonc` | Worker name and static asset deployment settings. |
 | `build.py` | Assembles fragment pages and copies standalone pages and assets into `public/`. |
+| `site.json` | Shared site name, description, and optional production URL for fragment pages. |
 | `assets/` | Optional images, stylesheets, scripts, and other static files. |
 | `drafts/` | Unpublished content; HTML in folders named `drafts` is excluded at any depth. |
 | `templates/` | Shared base, head, header, and footer for fragment pages; not published directly. |
