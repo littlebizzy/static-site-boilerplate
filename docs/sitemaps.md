@@ -1,6 +1,6 @@
 # XML Sitemaps
 
-Generate `sitemap.xml` from the **published, canonical URLs** during each site build so it stays in sync with the deployed pages. The boilerplate's `build.py` currently copies static files only; add sitemap generation when the site has real pages and a known production domain.
+Generate `sitemap.xml` from the **published, canonical URLs** during each site build so it stays in sync with the deployed pages. The boilerplate's `build.py` assembles HTML fragments and copies standalone pages and assets, but does not generate a sitemap; add that step when the site has real pages and a known production domain.
 
 ## What to include
 
