@@ -3,11 +3,12 @@
 
 from html import escape as escape_html
 from html.parser import HTMLParser
+from json import loads
 from pathlib import Path
 from posixpath import normpath
 from re import compile, escape, finditer, search
 from shutil import copy2, copytree, rmtree
-from urllib.parse import unquote, urlsplit
+from urllib.parse import quote, unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parent
@@ -16,6 +17,29 @@ STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 UNPUBLISHED_FOLDERS = {"drafts", "templates"}
 EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
+
+
+def load_site():
+    site = loads((ROOT / "site.json").read_text(encoding="utf-8"))
+    if not isinstance(site, dict) or any(not isinstance(site.get(key), str) for key in ("name", "url", "description")):
+        raise ValueError("site.json requires string name, url, and description fields")
+    if not site["name"].strip() or not site["description"].strip():
+        raise ValueError("site.json name and description cannot be empty")
+    site["url"] = site["url"].strip()
+    if site["url"]:
+        url = urlsplit(site["url"])
+        if url.scheme != "https" or not url.netloc or url.path not in ("", "/") or url.query or url.fragment:
+            raise ValueError("site.json url must be an HTTPS site root, such as https://example.com/")
+    return site
+
+
+def expand_site(value, site, html=False):
+    for key in ("name", "description"):
+        replacement = site[key]
+        if html:
+            replacement = escape_html(replacement, quote=True)
+        value = value.replace("{{ site_" + key + " }}", replacement)
+    return value
 
 
 def unpublished_filename(name):
@@ -65,7 +89,7 @@ def check_conflicts(sources):
         raise RuntimeError("Conflicting HTML routes:\n" + details)
 
 
-def render_page(source):
+def render_page(source, site):
     """Assemble front-matter HTML fragments; leave complete HTML files unchanged."""
     content = source.read_text(encoding="utf-8")
     if not content.startswith("---\n"):
@@ -86,13 +110,18 @@ def render_page(source):
             raise ValueError(f"{source.relative_to(ROOT)}:{number}: expected a supported key: value field")
         if key in metadata:
             raise ValueError(f"{source.relative_to(ROOT)}:{number}: duplicate {key} field")
-        metadata[key] = value
+        metadata[key] = expand_site(value, site)
 
     if not metadata.get("title") or not metadata.get("lang"):
         raise ValueError(f"{source.relative_to(ROOT)}: fragment pages require title and lang fields")
-    body = content[boundary + len("\n---\n"):].strip()
+    body = expand_site(content[boundary + len("\n---\n"):].strip(), site, html=True)
     if not body:
         raise ValueError(f"{source.relative_to(ROOT)}: fragment page has no HTML content")
+
+    if "canonical" not in metadata and site["url"] and source.relative_to(ROOT) != Path("404.html"):
+        route = route_for(source)
+        path = "/" if route == "." else "/" + route + ("/" if source.name == "index.html" else "")
+        metadata["canonical"] = site["url"].rstrip("/") + quote(path, safe="/")
 
     tags = []
     for field in ("description", "robots"):
@@ -125,9 +154,9 @@ def render_page(source):
     sections = {
         "lang": escape_html(metadata["lang"], quote=True),
         "head": head.strip(),
-        "header": (templates / "header.html").read_text(encoding="utf-8").strip(),
+        "header": expand_site((templates / "header.html").read_text(encoding="utf-8").strip(), site, html=True),
         "content": body,
-        "footer": (templates / "footer.html").read_text(encoding="utf-8").strip(),
+        "footer": expand_site((templates / "footer.html").read_text(encoding="utf-8").strip(), site, html=True),
     }
     # Accept the earlier base template while its empty body-attributes token is removed.
     rendered = rendered.replace("{{ body_attributes }}", "")
@@ -294,11 +323,12 @@ def check_internal_links(sources, rendered_pages):
 
 
 def main():
+    site = load_site()
     sources = html_sources()
     check_conflicts(sources)
     rendered_pages = {}
     for source in sources:
-        rendered = render_page(source)
+        rendered = render_page(source, site)
         if rendered is not None:
             rendered_pages[source] = rendered
     check_internal_links(sources, rendered_pages)
