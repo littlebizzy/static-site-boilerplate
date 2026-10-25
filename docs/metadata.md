@@ -24,27 +24,44 @@ image: https://example.com/assets/share.png
 
 Open Graph tags are generated automatically: `og:title` uses `title`, `og:description` uses `description` when present, `og:url` uses `canonical` when present, and `og:type` defaults to `website`. The optional `image` field produces `og:image` only when supplied; use an absolute, publicly accessible image URL.
 
-## Standalone pages and extended metadata
+## Shared head template
 
-Standalone HTML pages manage their own `<head>` and are copied unchanged. The equivalent markup below also includes an optional `twitter:card` tag, which the default fragment builder does not generate:
+A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter.
+
+Edit the shared template for site-wide head markup; edit each fragment's metadata for page-specific values. Do not repeat an entire `<head>` in fragments or hardcode one page's canonical URL across the site. Additional fields, such as a Twitter card or a different `og:type`, require site-specific template/builder changes. Standalone HTML files manage their own `<head>` and are copied unchanged.
+
+## JSON-LD and schema.org
+
+JSON-LD expresses structured data using schema.org types, typically in a `<script type="application/ld+json">` element in the `<head>` or `<body>`. Unlike ordinary meta tags, it describes entities and their relationships. The default builder **does not generate JSON-LD automatically**.
+
+For example, a real site's homepage might include:
 
 ```html
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page Title | Site Name</title>
-  <meta name="description" content="A concise description of this specific page.">
-  <link rel="canonical" href="https://example.com/page/">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Page Title">
-  <meta property="og:description" content="A concise description of this specific page.">
-  <meta property="og:url" content="https://example.com/page/">
-  <meta property="og:image" content="https://example.com/assets/share.png">
-  <meta name="twitter:card" content="summary_large_image">
-</head>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Example Site",
+  "url": "https://example.com/"
+}
+</script>
 ```
 
-- **Indexing:** Pages intended for search normally need no robots meta tag. Use `<meta name="robots" content="noindex">` for pages that should not appear in search; keep them crawlable so search engines can see it. `follow` is generally the default.
-- **Sharing:** Use an absolute, publicly accessible image URL for `og:image`. Open Graph tags also supply common social previews; add platform-specific tags only when needed.
-- **Structured data:** Add JSON-LD only when it accurately describes visible content. `WebPage`, `Article`, and other schema types serve different purposes; do not add them indiscriminately.
-- **Validation:** Inspect the deployed HTML, check relevant JSON-LD with Google's Rich Results Test, and test social previews on the platforms that matter.
+Replace example values with the site's real name and production URL before publishing. For a single page, place relevant JSON-LD in its fragment HTML or standalone document. For repeated schema, a shared template or build-time generator is often easier to maintain; generate valid JSON from actual page data, and emit each schema type only on relevant pages.
+
+Common choices:
+
+- **`WebSite`:** A real site's homepage, particularly to communicate its preferred site name.
+- **`Organization`:** The homepage of an actual organization with verifiable details.
+- **`BreadcrumbList`:** Nested pages with a meaningful breadcrumb hierarchy.
+- **`Article`, `Product`, etc.:** Only pages that genuinely contain that type of content.
+
+The starter's placeholder site name and domain are not real entities. Its homepage and 404 page deliberately ship without JSON-LD; do not add generic schema solely to fill every page. Structured data must agree with the visible page and does not guarantee a rich result.
+
+## Checks
+
+- **Indexing:** Search-indexable pages normally need no robots meta tag. Use `<meta name="robots" content="noindex">` where appropriate, and keep the URL crawlable.
+- **Sharing:** Use an absolute, publicly accessible image URL for `og:image` when provided; add platform-specific tags only when needed.
+- **Validation:** Inspect built HTML, test JSON-LD with [Google's Rich Results Test](https://search.google.com/test/rich-results) or [Schema Markup Validator](https://validator.schema.org/), and check social previews.
+
+See [Google's structured data introduction](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data) and [general guidelines](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
