@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "public"
 STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 EXCLUDED_DIRS = {"assets", "docs", "drafts", "public"}
+ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf"}
 
 
 def html_sources():
@@ -110,11 +111,16 @@ def redirect_sources():
 def check_asset(target, source, line, href, errors):
     """Check a deployed /assets/ path; return whether it is an asset reference."""
     relative = target.lstrip("/")
-    if not relative.startswith("assets/"):
+    if relative.startswith("assets/"):
+        assets_root = ROOT / "assets"
+        file = assets_root / relative[len("assets/"):]
+        exists = file.is_file() and file.resolve().is_relative_to(assets_root.resolve())
+    elif "/" not in relative and Path(relative).suffix.lower() in ROOT_ASSET_EXTENSIONS:
+        file = ROOT / relative
+        exists = file.is_file()
+    else:
         return False
-    assets_root = ROOT / "assets"
-    file = assets_root / relative[len("assets/"):]
-    if not file.is_file() or not file.resolve().is_relative_to(assets_root.resolve()):
+    if not exists:
         errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing local asset)")
     return True
 
@@ -205,6 +211,10 @@ def main():
         source = ROOT / name
         if source.is_file():
             copy2(source, OUTPUT / name)
+
+    for source in ROOT.iterdir():
+        if source.is_file() and source.suffix.lower() in ROOT_ASSET_EXTENSIONS and source.name not in STATIC_FILES:
+            copy2(source, OUTPUT / source.name)
 
     for source in sources:
         destination = OUTPUT / source.relative_to(ROOT)
