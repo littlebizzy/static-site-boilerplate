@@ -30,7 +30,7 @@ With Cloudflare Workers `auto-trailing-slash`, standalone `.html` pages have no 
 
 ## Shared layout
 
-Place `<!-- template: base -->` above the doctype to assemble a page with shared templates. Keep its normal `<head>` and `<main>`; the build combines them with `templates/base.html`, `templates/header.html`, and `templates/footer.html`. Unmarked pages remain standalone HTML and are copied unchanged.
+Place `<!-- template: base -->` above the doctype to assemble a page with shared templates. Keep `<html lang="...">`, `<head>`, `<body>`, and `<main>`; the build preserves the body attributes and full body content between the shared header and footer. Unmarked pages remain standalone HTML and are copied unchanged.
 
 Keep unpublished HTML in `drafts/` or `templates/` folders at any depth, or prefix an HTML filename with `_` or `.`. For example, `pages/drafts/about.html` and `_notes.html` are not published. Move finished pages to normal filenames and locations when ready. Keep draft-only assets out of `assets/`: its ordinary files are copied, but filenames beginning with `_` or `.` are excluded.
 
