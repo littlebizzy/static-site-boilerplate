@@ -2,7 +2,28 @@
 
 Give each published page a descriptive, unique title and meta description. Use its preferred public URL as the canonical; generated pages should not reuse the homepage's metadata.
 
-## Example
+## Fragment page metadata
+
+The default fragment format puts metadata before the HTML content:
+
+```html
+---
+title: Page Title | Site Name
+description: A concise description of this specific page.
+lang: en
+canonical: https://example.com/page/
+---
+<main>
+  <h1>Page Title</h1>
+  <p>Page content.</p>
+</main>
+```
+
+`title` and `lang` are required. `description`, `canonical`, and `robots` (such as `noindex`) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML.
+
+## Standalone pages and extended metadata
+
+Standalone HTML pages manage their own `<head>` and are copied unchanged. The following example also shows optional social tags you can add to the shared head template, with site-specific generation for any extra per-page fields:
 
 ```html
 <head>
