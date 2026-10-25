@@ -12,6 +12,7 @@ title: Page Title | Site Name
 description: A concise description of this specific page.
 lang: en
 canonical: https://example.com/page/
+image: https://example.com/assets/share.png
 ---
 <main>
   <h1>Page Title</h1>
@@ -19,11 +20,13 @@ canonical: https://example.com/page/
 </main>
 ```
 
-`title` and `lang` are required. `description`, `canonical`, and `robots` (such as `noindex`) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML.
+`title` and `lang` are required. `description`, `canonical`, `image`, and `robots` (such as `noindex`) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML.
+
+Open Graph tags are generated automatically: `og:title` uses `title`, `og:description` uses `description` when present, `og:url` uses `canonical` when present, and `og:type` defaults to `website`. The optional `image` field produces `og:image` only when supplied; use an absolute, publicly accessible image URL.
 
 ## Standalone pages and extended metadata
 
-Standalone HTML pages manage their own `<head>` and are copied unchanged. The following example also shows optional social tags you can add to the shared head template, with site-specific generation for any extra per-page fields:
+Standalone HTML pages manage their own `<head>` and are copied unchanged. The equivalent markup below also includes an optional `twitter:card` tag, which the default fragment builder does not generate:
 
 ```html
 <head>
