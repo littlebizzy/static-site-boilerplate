@@ -10,6 +10,8 @@ A minimal HTML-first starter for static sites deployed with Cloudflare Workers, 
 
 ## Documentation
 
+These guides cover the boilerplate's file structure, deployment, content management, security, and site maintenance.
+
 | Document | Description |
 | --- | --- |
 | [Cloudflare Workers](docs/cloudflare-workers.md) | Configure GitHub builds and deploy static assets to Cloudflare Workers. |
