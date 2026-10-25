@@ -8,7 +8,7 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 2. Checks links in HTML `<a href="...">` elements for missing internal pages. Possible missing destinations are reported with the source file, line, and URL, but do not stop the build.
 3. Checks local image, script, stylesheet, CSS `url()`, and other supported asset references under `assets/` and supported root-level static files, warning about missing files before cleaning the output.
 4. Deletes the previous `public/` directory and recreates it, so removed pages and assets do not linger. It refuses to clean a symlinked `public/` directory.
-5. Copies root-level `*.html` files, including `index.html` and `404.html`, and nested HTML files while preserving their paths.
+5. Copies publishable root-level and nested HTML files, including `index.html` and `404.html`, while preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory, including its subfolders, and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`).
 
@@ -26,7 +26,7 @@ Stylesheets under `assets/` are also scanned for simple local CSS `url()` refere
 
 External URLs, dynamic resources, and local paths outside `/assets/` or the supported root-level static file types are not checked. `srcset` candidates are parsed as URL tokens followed by optional descriptors, preserving commas inside URL tokens, including data URLs. This is a lightweight check of deployed static assets, not a complete resource crawler.
 
-Only HTML is copied from other top-level directories. The nested HTML scan skips the **root-level** `docs/`, `drafts/`, `assets/`, `public/`, and hidden top-level directories. Everything inside the root `drafts/` directory stays unpublished, including nested HTML files. A different path such as `pages/drafts/` is **not** automatically excluded. Python source files, deployment configuration, and documentation in the root `docs/` directory are not copied into the output.
+Only HTML is copied from other top-level directories. The HTML scan skips `drafts/` and `templates/` folders at any depth, plus HTML filenames beginning with `_` or `.`. It also skips the root-level `docs/`, `assets/`, `public/`, and hidden top-level directories. For example, `pages/drafts/preview.html` and `_notes.html` stay unpublished. These HTML exclusions do not change copying of the root deployment files or the `assets/` directory. Python source files and documentation in the root `docs/` directory are not copied into the output.
 
 ## Extending the build
 
