@@ -12,16 +12,22 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "public"
 STATIC_FILES = ("_headers", "_redirects", "robots.txt")
-EXCLUDED_DIRS = {"assets", "docs", "drafts", "public"}
+UNPUBLISHED_FOLDERS = {"drafts", "templates"}
+EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
 
 
 def html_sources():
-    sources = [path for path in ROOT.glob("*.html") if path.is_file()]
+    sources = [path for path in ROOT.glob("*.html") if path.is_file() and not path.name.startswith(("_", "."))]
     for directory in ROOT.iterdir():
         if not directory.is_dir() or directory.name in EXCLUDED_DIRS or directory.name.startswith("."):
             continue
-        sources.extend(path for path in directory.rglob("*.html") if path.is_file())
+        sources.extend(
+            path for path in directory.rglob("*.html")
+            if path.is_file()
+            and not path.name.startswith(("_", "."))
+            and UNPUBLISHED_FOLDERS.isdisjoint(path.relative_to(ROOT).parts[:-1])
+        )
     return sorted(sources)
 
 
