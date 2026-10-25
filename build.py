@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Copy static site files into the Cloudflare deployment directory."""
+"""Copy or assemble static pages into the Cloudflare deployment directory."""
 
 from html.parser import HTMLParser
 from pathlib import Path
 from posixpath import normpath
-from re import compile, escape, finditer
+from re import compile, escape, finditer, search
 from shutil import copy2, copytree, rmtree
 from urllib.parse import unquote, urlsplit
 
@@ -15,6 +15,7 @@ STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 UNPUBLISHED_FOLDERS = {"drafts", "templates"}
 EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
+TEMPLATE_MARKER = "<!-- template: base -->"
 
 
 def unpublished_filename(name):
@@ -58,6 +59,33 @@ def check_conflicts(sources):
             for route, paths in sorted(conflicts.items())
         )
         raise RuntimeError("Conflicting HTML routes:\n" + details)
+
+
+def render_page(source):
+    """Assemble explicitly marked HTML pages from the shared templates."""
+    html = source.read_text(encoding="utf-8")
+    if not html.lstrip().startswith(TEMPLATE_MARKER):
+        return None
+
+    head = search(r"(?is)<head\b[^>]*>.*?</head\s*>", html)
+    main = search(r"(?is)<main\b[^>]*>.*?</main\s*>", html)
+    if not head or not main:
+        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need one <head> and <main>")
+
+    templates = ROOT / "templates"
+    sections = {
+        "head": head.group(0),
+        "header": (templates / "header.html").read_text(encoding="utf-8"),
+        "content": main.group(0),
+        "footer": (templates / "footer.html").read_text(encoding="utf-8"),
+    }
+    rendered = (templates / "base.html").read_text(encoding="utf-8")
+    for name, section in sections.items():
+        token = "{{ " + name + " }}"
+        if rendered.count(token) != 1:
+            raise ValueError(f"templates/base.html must contain exactly one {token}")
+        rendered = rendered.replace(token, section.strip())
+    return rendered
 
 
 def srcset_urls(value):
@@ -166,13 +194,14 @@ def check_css_assets(errors):
             check_asset(target, source, line, href, errors)
 
 
-def check_internal_links(sources):
+def check_internal_links(sources, rendered_pages):
     routes = {route_for(source) for source in sources}
     redirects = redirect_sources()
     errors = []
     for source in sources:
         parser = LinkParser()
-        parser.feed(source.read_text(encoding="utf-8"))
+        html = rendered_pages[source] if source in rendered_pages else source.read_text(encoding="utf-8")
+        parser.feed(html)
         parent = source.relative_to(ROOT).parent
         # Flat page.html URLs omit the slash; index.html folders retain it.
         # Both resolve relative links from their containing URL directory.
@@ -216,7 +245,12 @@ def check_internal_links(sources):
 def main():
     sources = html_sources()
     check_conflicts(sources)
-    check_internal_links(sources)
+    rendered_pages = {}
+    for source in sources:
+        rendered = render_page(source)
+        if rendered is not None:
+            rendered_pages[source] = rendered
+    check_internal_links(sources, rendered_pages)
 
     if OUTPUT.is_symlink():
         raise RuntimeError("Refusing to clean a symlinked public/ directory")
@@ -241,7 +275,10 @@ def main():
     for source in sources:
         destination = OUTPUT / source.relative_to(ROOT)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        copy2(source, destination)
+        if source in rendered_pages:
+            destination.write_text(rendered_pages[source], encoding="utf-8")
+        else:
+            copy2(source, destination)
 
     assets = ROOT / "assets"
     if assets.is_dir():
