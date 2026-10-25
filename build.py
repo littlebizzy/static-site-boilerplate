@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "public"
 STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 EXCLUDED_DIRS = {"assets", "docs", "drafts", "public"}
-ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf"}
+ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
 
 
 def html_sources():
