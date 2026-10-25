@@ -2,6 +2,14 @@
 
 Run `python3 build.py` from the repository root. Cloudflare Workers uses the same command before deploying the contents of `public/`.
 
+## Site settings
+
+Set the site name and default description in the root `site.json`. Its `url` field is optional: leave it empty until the production hostname is known, then use the site's HTTPS root URL (such as `https://example.com/`). The configuration file itself is not published.
+
+The fragment builder expands `{{ site_name }}` and `{{ site_description }}` in page metadata, fragment content, and shared header/footer templates. Site text is escaped for HTML output. A page's own title or description can use custom text instead; the site description is not automatically repeated on every page.
+
+When `site.json` has a production URL, fragment pages automatically receive canonical URLs matching their published routes, including the distinct slash forms of directory indexes and standalone `.html` filenames. An explicit `canonical` field overrides the automatic value. The root `404.html` has no automatic canonical. When `url` is empty, no canonical is invented. Standalone full HTML documents remain untouched and manage their own metadata.
+
 ## What the script does
 
 1. Collects root-level and nested HTML files and checks for conflicting public routes **before** touching `public/`. For example, `about.html` and `about/index.html` cannot coexist because they share the same page slug, even though their canonical slash forms differ.
@@ -36,10 +44,9 @@ Start a page with a simple `---` metadata block, followed by its HTML content:
 
 ```html
 ---
-title: About | Site Name
+title: About | {{ site_name }}
 description: Learn about this site and the people behind it.
 lang: en
-canonical: https://example.com/about/
 ---
 <main>
   <h1>About</h1>
@@ -49,7 +56,7 @@ canonical: https://example.com/about/
 
 The `title` and `lang` fields are required. `description`, `robots` (for example, `noindex`), `canonical`, and `image` are optional. Use an absolute, publicly accessible URL for `image`. Each field is a single `key: value` line; this is a small built-in parser, not full YAML. Unsupported or duplicate fields, missing required values, empty page content, and missing closing `---` stop the build.
 
-The builder reuses `title` for `og:title`, `description` for `og:description`, and `canonical` for `og:url`. It sets `og:type` to `website`, and includes `og:image` only when `image` is provided. It does not require an image or invent a canonical URL.
+The builder reuses `title` for `og:title`, `description` for `og:description`, and the resolved canonical URL for `og:url`. It sets `og:type` to `website`, and includes `og:image` only when `image` is provided. It does not require an image or invent a canonical URL without a configured site URL or explicit override.
 
 The builder inserts page metadata into `templates/head.html` and page HTML into `templates/base.html`, alongside `templates/header.html` and `templates/footer.html`. The template supplies the doctype, `html`, `head`, and `body` elements; a fragment normally supplies its own `<main>`. Do not add a complete HTML document or the old `<!-- template: base -->` marker to a fragment.
 
