@@ -2,7 +2,8 @@
 
 This boilerplate keeps content in the repository, without a CMS.
 
-- Edit published HTML files directly. Root-level pages and HTML inside regular content directories are copied to `public/` by `build.py`.
+- Edit published HTML files directly. Unmarked pages are copied to `public/` unchanged by `build.py`.
+- To use the shared layout, start a page with `<!-- template: base -->` and include its own `<head>` and `<main>`. Edit `templates/header.html` and `templates/footer.html` for site-wide changes.
 - Keep unpublished HTML in `drafts/` or `templates/` folders at any depth, or prefix individual HTML filenames with `_` or `.`. These pages are excluded from builds.
 - Move a finished draft into its intended published location when ready. Keep internal links consistent with the final URL.
 - For larger sites, JSON or Markdown can serve as source content, but converting them into HTML requires site-specific additions to `build.py`; this boilerplate does not perform that conversion automatically.
