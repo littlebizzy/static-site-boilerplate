@@ -45,6 +45,26 @@ def check_conflicts(sources):
         raise RuntimeError("Conflicting HTML routes:\n" + details)
 
 
+def srcset_urls(value):
+    """Read srcset URL tokens without splitting commas inside URLs."""
+    index = 0
+    while index < len(value):
+        while index < len(value) and (value[index].isspace() or value[index] == ","):
+            index += 1
+        start = index
+        while index < len(value) and not value[index].isspace():
+            index += 1
+        url = value[start:index].rstrip(",")
+        if url:
+            yield url
+        if index > start and value[index - 1] == ",":
+            continue
+        # Skip descriptors until the next candidate separator.
+        while index < len(value) and value[index] != ",":
+            index += 1
+        index += 1
+
+
 class LinkParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
@@ -58,10 +78,8 @@ class LinkParser(HTMLParser):
                 self.links.append((self.getpos()[0], href))
         attributes = dict(attrs)
         if tag.lower() in {"img", "source"} and attributes.get("srcset"):
-            for candidate in attributes["srcset"].split(","):
-                parts = candidate.strip().split()
-                if parts:
-                    self.assets.append((self.getpos()[0], parts[0]))
+            for url in srcset_urls(attributes["srcset"]):
+                self.assets.append((self.getpos()[0], url))
         if tag.lower() in {"img", "script", "source", "video", "audio"} and attributes.get("src"):
             self.assets.append((self.getpos()[0], attributes["src"]))
         if tag.lower() == "link" and attributes.get("href") and any(
