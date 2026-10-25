@@ -8,10 +8,9 @@ The default fragment format puts metadata before the HTML content:
 
 ```html
 ---
-title: Page Title | Site Name
+title: Page Title | {{ site_name }}
 description: A concise description of this specific page.
 lang: en
-canonical: https://example.com/page/
 image: https://example.com/assets/share.png
 ---
 <main>
@@ -22,13 +21,15 @@ image: https://example.com/assets/share.png
 
 `title` and `lang` are required. `description`, `canonical`, `image`, and `robots` (such as `noindex`) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML.
 
-Open Graph tags are generated automatically: `og:title` uses `title`, `og:description` uses `description` when present, `og:url` uses `canonical` when present, and `og:type` defaults to `website`. The optional `image` field produces `og:image` only when supplied; use an absolute, publicly accessible image URL.
+The shared `site.json` supplies `name`, `description`, and an optional HTTPS production `url`. Fragments can use `{{ site_name }}` or `{{ site_description }}` in metadata and page content; site-wide values are also available in shared header/footer templates. Page-specific values remain independent, so the site description is not automatically reused as every page's meta description. When a production URL is configured, the builder generates canonical URLs from fragment page routes unless a page specifies its own `canonical`. Without a configured URL or an explicit override, no canonical is generated. The 404 page is excluded from automatic canonicals; standalone HTML is unchanged.
+
+Open Graph tags are generated automatically: `og:title` uses `title`, `og:description` uses `description` when present, `og:url` uses the resolved canonical when present, and `og:type` defaults to `website`. The optional `image` field produces `og:image` only when supplied; use an absolute, publicly accessible image URL.
 
 The shared head adds `<meta name="twitter:card" content="summary">` for a simple link preview. It reuses the existing Open Graph title and description, without duplicate Twitter-specific fields or a required image. The final preview appearance depends on the platform.
 
 ## Shared head template
 
-A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, Twitter summary card, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter.
+A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, Twitter summary card, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter and the configured site URL.
 
 Edit the shared template for site-wide head markup; edit each fragment's metadata for page-specific values. Do not repeat an entire `<head>` in fragments or hardcode one page's canonical URL across the site. Other platform-specific fields or a different `og:type` require site-specific template/builder changes. Standalone HTML files manage their own `<head>` and are copied unchanged.
 
