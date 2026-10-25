@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Copy or assemble static pages into the Cloudflare deployment directory."""
 
+from html import escape as escape_html
 from html.parser import HTMLParser
 from pathlib import Path
 from posixpath import normpath
@@ -15,7 +16,6 @@ STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 UNPUBLISHED_FOLDERS = {"drafts", "templates"}
 EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
-TEMPLATE_MARKER = "<!-- template: base -->"
 
 
 def unpublished_filename(name):
@@ -62,43 +62,67 @@ def check_conflicts(sources):
 
 
 def render_page(source):
-    """Assemble explicitly marked HTML pages from the shared templates."""
-    html = source.read_text(encoding="utf-8")
-    if not html.lstrip().startswith(TEMPLATE_MARKER):
+    """Assemble front-matter HTML fragments; leave complete HTML files unchanged."""
+    content = source.read_text(encoding="utf-8")
+    if not content.startswith("---\n"):
         return None
 
-    html_element = search(r"(?is)<html\b[^>]*>", html)
-    lang = search(r"""(?i)\blang\s*=\s*(["'])([^"']+)\1""", html_element.group(0)) if html_element else None
-    if not lang or not lang.group(2).strip():
-        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need an <html lang=\"...\"> attribute")
+    boundary = content.find("\n---\n", 4)
+    if boundary == -1:
+        raise ValueError(f"{source.relative_to(ROOT)}: missing closing front-matter --- line")
 
-    head = search(r"(?is)<head\b[^>]*>.*?</head\s*>", html)
-    body = search(r"(?is)<body\b([^>]*)>(.*)</body\s*>", html)
-    main = search(r"(?is)<main\b[^>]*>.*?</main\s*>", body.group(2)) if body else None
-    if not head or not body or not main:
-        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need a <head>, <body>, and <main>")
+    metadata = {}
+    allowed = {"title", "description", "lang", "robots", "canonical"}
+    for number, line in enumerate(content[4:boundary].splitlines(), start=2):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        key, separator, value = line.partition(":")
+        key, value = key.strip(), value.strip()
+        if not separator or key not in allowed or not value:
+            raise ValueError(f"{source.relative_to(ROOT)}:{number}: expected a supported key: value field")
+        if key in metadata:
+            raise ValueError(f"{source.relative_to(ROOT)}:{number}: duplicate {key} field")
+        metadata[key] = value
+
+    if not metadata.get("title") or not metadata.get("lang"):
+        raise ValueError(f"{source.relative_to(ROOT)}: fragment pages require title and lang fields")
+    body = content[boundary + len("\n---\n"):].strip()
+    if not body:
+        raise ValueError(f"{source.relative_to(ROOT)}: fragment page has no HTML content")
+
+    tags = []
+    for field in ("description", "robots"):
+        if field in metadata:
+            tags.append(f'  <meta name="{field}" content="{escape_html(metadata[field], quote=True)}">')
+    if "canonical" in metadata:
+        tags.append(f'  <link rel="canonical" href="{escape_html(metadata["canonical"], quote=True)}">')
 
     templates = ROOT / "templates"
-    sections = {
-        "lang": lang.group(2).strip(),
-        "head": head.group(0),
-        "body_attributes": body.group(1),
-        "header": (templates / "header.html").read_text(encoding="utf-8"),
-        "content": body.group(2),
-        "footer": (templates / "footer.html").read_text(encoding="utf-8"),
-    }
+    head = (templates / "head.html").read_text(encoding="utf-8")
+    for name, value in {
+        "title": escape_html(metadata["title"], quote=True),
+        "metadata": "\n".join(tags),
+    }.items():
+        token = "{{ " + name + " }}"
+        if head.count(token) != 1:
+            raise ValueError(f"templates/head.html must contain exactly one {token}")
+        head = head.replace(token, value)
+
     rendered = (templates / "base.html").read_text(encoding="utf-8")
-    # Accept the original sample base as well as the language placeholder.
-    if "{{ lang }}" not in rendered and '<html lang="en">' in rendered:
-        rendered = rendered.replace('<html lang="en">', '<html lang="{{ lang }}">', 1)
-    # Accept the original sample body tag as well as the attributes placeholder.
-    if "{{ body_attributes }}" not in rendered and "<body>" in rendered:
-        rendered = rendered.replace("<body>", "<body{{ body_attributes }}>", 1)
-    for name, section in sections.items():
+    sections = {
+        "lang": escape_html(metadata["lang"], quote=True),
+        "head": head.strip(),
+        "header": (templates / "header.html").read_text(encoding="utf-8").strip(),
+        "content": body,
+        "footer": (templates / "footer.html").read_text(encoding="utf-8").strip(),
+    }
+    # Accept the earlier base template while its empty body-attributes token is removed.
+    rendered = rendered.replace("{{ body_attributes }}", "")
+    for name, value in sections.items():
         token = "{{ " + name + " }}"
         if rendered.count(token) != 1:
             raise ValueError(f"templates/base.html must contain exactly one {token}")
-        rendered = rendered.replace(token, section if name == "body_attributes" else section.strip())
+        rendered = rendered.replace(token, value)
     return rendered
 
 
