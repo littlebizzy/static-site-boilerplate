@@ -10,7 +10,7 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 4. Deletes the previous `public/` directory and recreates it, so removed pages and assets do not linger. It refuses to clean a symlinked `public/` directory.
 5. Copies root-level `*.html` files, including `index.html` and `404.html`, and nested HTML files while preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
-7. Copies the optional `assets/` directory, including its subfolders, and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`).
+7. Copies the optional `assets/` directory, including its subfolders, and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`).
 
 ## Internal link checks
 
