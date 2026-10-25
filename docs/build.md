@@ -47,7 +47,9 @@ canonical: https://example.com/about/
 </main>
 ```
 
-The `title` and `lang` fields are required. `description`, `robots` (for example, `noindex`), and `canonical` are optional. Each field is a single `key: value` line; this is a small built-in parser, not full YAML. Unsupported or duplicate fields, missing required values, empty page content, and missing closing `---` stop the build.
+The `title` and `lang` fields are required. `description`, `robots` (for example, `noindex`), `canonical`, and `image` are optional. Use an absolute, publicly accessible URL for `image`. Each field is a single `key: value` line; this is a small built-in parser, not full YAML. Unsupported or duplicate fields, missing required values, empty page content, and missing closing `---` stop the build.
+
+The builder reuses `title` for `og:title`, `description` for `og:description`, and `canonical` for `og:url`. It sets `og:type` to `website`, and includes `og:image` only when `image` is provided. It does not require an image or invent a canonical URL.
 
 The builder inserts page metadata into `templates/head.html` and page HTML into `templates/base.html`, alongside `templates/header.html` and `templates/footer.html`. The template supplies the doctype, `html`, `head`, and `body` elements; a fragment normally supplies its own `<main>`. Do not add a complete HTML document or the old `<!-- template: base -->` marker to a fragment.
 
