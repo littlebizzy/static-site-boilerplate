@@ -10,7 +10,7 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 4. Deletes the previous `public/` directory and recreates it, so removed pages and assets do not linger. It refuses to clean a symlinked `public/` directory.
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
-7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding asset filenames beginning with `_` or `.`.
+7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
 
 ## Internal link checks
 
@@ -26,7 +26,7 @@ Stylesheets under `assets/` are also scanned for simple local CSS `url()` refere
 
 External URLs, dynamic resources, and local paths outside `/assets/` or the supported root-level static file types are not checked. `srcset` candidates are parsed as URL tokens followed by optional descriptors, preserving commas inside URL tokens, including data URLs. This is a lightweight check of deployed static assets, not a complete resource crawler.
 
-Only HTML pages are published from other top-level directories. The HTML scan skips `drafts/` and `templates/` folders at any depth, plus HTML filenames beginning with `_` or `.`. It also skips the root-level `docs/`, `assets/`, `public/`, and hidden top-level directories. For example, `pages/drafts/preview.html` and `_notes.html` stay unpublished. The filename rule also applies to ordinary root static files and files inside `assets/`. The required root `_headers` and `_redirects` are still copied explicitly. Python source files and documentation in the root `docs/` directory are not copied into the output.
+Only HTML pages are published from other top-level directories. The HTML scan skips `drafts/` and `templates/` folders at any depth, plus every file or directory whose name begins with `_` or `.`, at any depth. It also skips root-level `docs/`, `assets/`, and `public/` as HTML sources. For example, `pages/_drafts/preview.html`, `pages/.private/preview.html`, and `_notes.html` stay unpublished. The same prefix rule excludes ordinary root static files and files or directories within `assets/`; links to excluded assets are reported as missing. The required root `_headers` and `_redirects` are copied explicitly as exceptions. Python source files and documentation in the root `docs/` directory are not copied into the output.
 
 ## Page formats
 
