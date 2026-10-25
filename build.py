@@ -4,7 +4,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 from posixpath import normpath
-from re import compile, escape
+from re import compile, escape, finditer, sub
 from shutil import copy2, copytree, rmtree
 from urllib.parse import unquote, urlsplit
 
@@ -101,6 +101,29 @@ def check_asset(target, source, line, href, errors):
     return True
 
 
+def check_css_assets(errors):
+    """Check simple CSS url() references relative to each stylesheet."""
+    assets = ROOT / "assets"
+    if not assets.is_dir():
+        return
+    for source in sorted(assets.rglob("*.css")):
+        css = source.read_text(encoding="utf-8")
+        # Avoid treating URLs in ordinary CSS comments as live references.
+        css = sub(r"/\*.*?\*/", lambda match: "\n" * match.group().count("\n"), css, flags=16)
+        for match in finditer(r"""url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s]*))\s*\)""", css, flags=2):
+            href = next((part for part in match.groups() if part is not None), "").strip()
+            url = urlsplit(href)
+            if url.scheme or url.netloc or not url.path:
+                continue
+            path = unquote(url.path)
+            if "\\" in path or "\x00" in path:
+                continue
+            base = "/" + source.relative_to(ROOT).parent.as_posix() + "/"
+            target = normpath(path if path.startswith("/") else base + path)
+            line = css.count("\n", 0, match.start()) + 1
+            check_asset(target, source, line, href, errors)
+
+
 def check_internal_links(sources):
     routes = {route_for(source) for source in sources}
     redirects = redirect_sources()
@@ -142,6 +165,7 @@ def check_internal_links(sources):
                     continue  # Non-HTML assets are outside this check.
             if route not in routes and not any(pattern.fullmatch(candidate) for pattern in redirects for candidate in (target, target + "/" if path.endswith("/") and target != "/" else target)):
                 errors.append(f"{source.relative_to(ROOT)}:{line}: {href} (missing HTML page)")
+    check_css_assets(errors)
     if errors:
         raise RuntimeError("Broken internal page links:\n" + "\n".join(errors))
 
