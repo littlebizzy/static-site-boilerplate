@@ -13,7 +13,7 @@
 
 4. Select **Save and Deploy**.
 
-The build script assembles marked HTML pages using shared templates, copies other publishable HTML unchanged, and includes `_headers`, `_redirects`, `robots.txt`, and `assets/` when present. Cloudflare deploys the files in `public/`, and `wrangler.jsonc` enables custom `404.html` responses.
+The build script assembles front-matter HTML fragments using shared templates, copies standalone HTML unchanged, and includes `_headers`, `_redirects`, `robots.txt`, and `assets/` when present. Cloudflare deploys the files in `public/`, and `wrangler.jsonc` enables custom `404.html` responses.
 
 Future commits to the production branch will trigger new builds. If the Worker already exists, connect the repository under **Settings → Builds** instead.
 
