@@ -67,6 +67,11 @@ def render_page(source):
     if not html.lstrip().startswith(TEMPLATE_MARKER):
         return None
 
+    html_element = search(r"(?is)<html\b[^>]*>", html)
+    lang = search(r"""(?i)\blang\s*=\s*(["'])([^"']+)\1""", html_element.group(0)) if html_element else None
+    if not lang or not lang.group(2).strip():
+        raise ValueError(f"{source.relative_to(ROOT)}: templated pages need an <html lang=\"...\"> attribute")
+
     head = search(r"(?is)<head\b[^>]*>.*?</head\s*>", html)
     main = search(r"(?is)<main\b[^>]*>.*?</main\s*>", html)
     if not head or not main:
@@ -74,12 +79,16 @@ def render_page(source):
 
     templates = ROOT / "templates"
     sections = {
+        "lang": lang.group(2).strip(),
         "head": head.group(0),
         "header": (templates / "header.html").read_text(encoding="utf-8"),
         "content": main.group(0),
         "footer": (templates / "footer.html").read_text(encoding="utf-8"),
     }
     rendered = (templates / "base.html").read_text(encoding="utf-8")
+    # Accept the original sample base as well as the language placeholder.
+    if "{{ lang }}" not in rendered and '<html lang="en">' in rendered:
+        rendered = rendered.replace('<html lang="en">', '<html lang="{{ lang }}">', 1)
     for name, section in sections.items():
         token = "{{ " + name + " }}"
         if rendered.count(token) != 1:
