@@ -8,7 +8,7 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 | `Referrer-Policy: strict-origin-when-cross-origin` | Limits referrer information sent to other sites. |
 | `X-Frame-Options: SAMEORIGIN` | Restricts framing by other origins. |
 | `Permissions-Policy` | Disables camera, microphone, and geolocation access by default. |
-| `Strict-Transport-Security` | Tells browsers to use HTTPS on subsequent visits for one year. |
+| `Strict-Transport-Security` | Tells browsers to use HTTPS on subsequent visits for six months. |
 | `Content-Security-Policy` | Restricts where scripts, styles, images, and other resources may load from. |
 
 ## Before deploying
