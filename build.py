@@ -72,7 +72,7 @@ def render_page(source):
         raise ValueError(f"{source.relative_to(ROOT)}: missing closing front-matter --- line")
 
     metadata = {}
-    allowed = {"title", "description", "lang", "robots", "canonical"}
+    allowed = {"title", "description", "lang", "robots", "canonical", "image"}
     for number, line in enumerate(content[4:boundary].splitlines(), start=2):
         if not line.strip() or line.lstrip().startswith("#"):
             continue
@@ -96,6 +96,15 @@ def render_page(source):
             tags.append(f'  <meta name="{field}" content="{escape_html(metadata[field], quote=True)}">')
     if "canonical" in metadata:
         tags.append(f'  <link rel="canonical" href="{escape_html(metadata["canonical"], quote=True)}">')
+
+    tags.append('  <meta property="og:type" content="website">')
+    tags.append(f'  <meta property="og:title" content="{escape_html(metadata["title"], quote=True)}">')
+    if "description" in metadata:
+        tags.append(f'  <meta property="og:description" content="{escape_html(metadata["description"], quote=True)}">')
+    if "canonical" in metadata:
+        tags.append(f'  <meta property="og:url" content="{escape_html(metadata["canonical"], quote=True)}">')
+    if "image" in metadata:
+        tags.append(f'  <meta property="og:image" content="{escape_html(metadata["image"], quote=True)}">')
 
     templates = ROOT / "templates"
     head = (templates / "head.html").read_text(encoding="utf-8")
