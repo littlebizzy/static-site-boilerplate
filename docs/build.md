@@ -19,6 +19,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
+8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. `<lastmod>` dates come from Git history, not the build time; dates are omitted if the relevant history is unavailable.
 
 ## Internal link checks
 
@@ -70,6 +71,6 @@ Fragment content is inserted **before** the shared footer. Place scripts that mu
 
 ## Extending the build
 
-Add site-specific generation steps to `build.py` **after cleaning `public/`** and before deployment. For example, generate published pages or a `public/sitemap.xml` file. Do not write source files into `public/` by hand: the next build deletes them. If your build generates HTML pages, run link validation after those pages exist.
+Add site-specific generation steps to `build.py` **after cleaning `public/`** and before deployment. For example, generate additional site-specific pages. Do not write source files into `public/` by hand: the next build deletes them. If your build generates HTML pages, run link validation after those pages exist.
 
 See [File Structure](file-structure.md) for example page layouts and [Cloudflare Workers Deployment](cloudflare-workers.md) for deployment settings.
