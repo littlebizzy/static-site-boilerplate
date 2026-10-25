@@ -21,11 +21,11 @@ Both folder-based and file-based HTML pages work, including nested pages:
 | Source file | Clean URL |
 | --- | --- |
 | `about/index.html` | `/about/` |
-| `about.html` | `/about/` |
+| `about.html` | `/about` |
 | `guides/install/index.html` | `/guides/install/` |
-| `guides/install.html` | `/guides/install/` |
+| `guides/install.html` | `/guides/install` |
 
-Choose **one** representation for each URL; do not publish both `about.html` and `about/index.html`. The configured Cloudflare Workers `auto-trailing-slash` setting handles clean URLs.
+With Cloudflare Workers `auto-trailing-slash`, standalone `.html` pages have no trailing slash, while folder `index.html` pages do. Requests to the other slash form redirect to the canonical URL. Choose **one** source representation per page; `build.py` rejects pairs such as `about.html` and `about/index.html` because they share the same page slug.
 
 Keep unpublished HTML under the root `drafts/` directory, such as `drafts/about.html` or `drafts/guides/install/index.html`. `build.py` excludes the entire directory, including nested files, from `public/`. Move a draft to its published location when ready.
 
