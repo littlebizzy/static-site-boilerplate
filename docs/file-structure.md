@@ -8,10 +8,10 @@
 | `_headers` | Security headers for deployed pages and assets. |
 | `_redirects` | Commented examples for optional URL redirects. |
 | `wrangler.jsonc` | Worker name and static asset deployment settings. |
-| `build.py` | Copies site files into `public/` for deployment. |
+| `build.py` | Assembles fragment pages and copies standalone pages and assets into `public/`. |
 | `assets/` | Optional images, stylesheets, scripts, and other static files. |
 | `drafts/` | Unpublished content; HTML in folders named `drafts` is excluded at any depth. |
-| `templates/` | Shared base, header, and footer for opted-in pages; not published directly. |
+| `templates/` | Shared base, head, header, and footer for fragment pages; not published directly. |
 | `public/` | Generated deployment directory; do not edit files here directly. |
 | `docs/` | Project documentation; not copied into the deployed site. |
 
@@ -30,7 +30,9 @@ With Cloudflare Workers `auto-trailing-slash`, standalone `.html` pages have no 
 
 ## Shared layout
 
-Place `<!-- template: base -->` above the doctype to assemble a page with shared templates. Keep `<html lang="...">`, `<head>`, `<body>`, and `<main>`; the build preserves the body attributes and full body content between the shared header and footer. Unmarked pages remain standalone HTML and are copied unchanged.
+The example `index.html` and `404.html` begin with `---` metadata and contain only their page-specific HTML, including `<main>`. The builder combines each fragment with `templates/base.html`, `templates/head.html`, `templates/header.html`, and `templates/footer.html` to produce complete HTML.
+
+A standalone file with its own doctype, `html`, `head`, and `body` (and no starting `---` metadata block) is copied unchanged. The builder never extracts pieces from a complete HTML document. Both page formats use the same clean-URL mapping.
 
 Keep unpublished HTML in `drafts/` or `templates/` folders at any depth, or prefix an HTML filename with `_` or `.`. For example, `pages/drafts/about.html` and `_notes.html` are not published. Move finished pages to normal filenames and locations when ready. Keep draft-only assets out of `assets/`: its ordinary files are copied, but filenames beginning with `_` or `.` are excluded.
 
