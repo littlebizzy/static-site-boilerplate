@@ -19,7 +19,7 @@ image: https://example.com/assets/share.png
 </main>
 ```
 
-`title` and `lang` are required. `description`, `canonical`, `image`, and `robots` (such as `noindex`) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML.
+`title` and `lang` are required. `description`, `canonical`, `image`, `robots` (such as `noindex`), and `lastmod` (a valid `YYYY-MM-DD` date) are optional. The builder uses `templates/head.html` to create the HTML head and escapes metadata values. These are plain single-line `key: value` fields, not full YAML. The optional `lastmod` field overrides the Git modification date in the generated sitemap; it does not produce an HTML meta tag.
 
 The shared `site.json` supplies `name`, `description`, and an optional HTTPS production `url`. Fragments can use `{{ site_name }}` or `{{ site_description }}` in metadata and page content; site-wide values are also available in shared header/footer templates. Page-specific values remain independent, so the site description is not automatically reused as every page's meta description. When a production URL is configured, the builder generates canonical URLs from fragment page routes unless a page specifies its own `canonical`. Without a configured URL or an explicit override, no canonical is generated. The 404 page is excluded from automatic canonicals; standalone HTML is unchanged.
 
