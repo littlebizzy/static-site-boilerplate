@@ -16,6 +16,7 @@ These guides explain how to organize pages and assets, deploy with Cloudflare Wo
 
 | Document | Description |
 | --- | --- |
+| [Agent Guidelines](agents.md) | Follow repository conventions for automated changes and commits. |
 | [Cloudflare Workers](docs/cloudflare-workers.md) | Configure GitHub builds and deploy static assets to Cloudflare Workers. |
 | [Custom Domains](docs/domains.md) | Connect a domain, configure HTTPS, and choose a preferred hostname. |
 | [Deploy Hooks](docs/deploy-hooks.md) | Trigger builds manually and compare deploy hooks with watch paths. |
