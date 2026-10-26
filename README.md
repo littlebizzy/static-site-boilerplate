@@ -12,7 +12,7 @@ Pages with `---` metadata at the top are assembled with `templates/base.html`, `
 
 ## Documentation
 
-These guides explain how to organize pages and assets, deploy with Cloudflare Workers, manage content, and configure redirects, security headers, caching, and SEO. Use the relevant topics as you customize and maintain your site.
+Use these guides to organize content and templates, build and deploy with Cloudflare Workers, configure domains, redirects, metadata, security, caching, and SEO, and check performance, accessibility, and launch readiness.
 
 | Document | Description |
 | --- | --- |
