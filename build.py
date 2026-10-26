@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Copy or assemble static pages into the Cloudflare deployment directory."""
 
+from datetime import date
 from html import escape as escape_html
 from html.parser import HTMLParser
 from json import loads
@@ -107,7 +108,7 @@ def render_page(source, site):
         raise ValueError(f"{source.relative_to(ROOT)}: missing closing front-matter --- line")
 
     metadata = {}
-    allowed = {"title", "description", "lang", "robots", "canonical", "image"}
+    allowed = {"title", "description", "lang", "robots", "canonical", "image", "lastmod"}
     for number, line in enumerate(content[4:boundary].splitlines(), start=2):
         if not line.strip() or line.lstrip().startswith("#"):
             continue
@@ -121,6 +122,12 @@ def render_page(source, site):
 
     if not metadata.get("title") or not metadata.get("lang"):
         raise ValueError(f"{source.relative_to(ROOT)}: fragment pages require title and lang fields")
+    if "lastmod" in metadata:
+        try:
+            if date.fromisoformat(metadata["lastmod"]).isoformat() != metadata["lastmod"]:
+                raise ValueError()
+        except ValueError:
+            raise ValueError(f"{source.relative_to(ROOT)}: lastmod must be a valid YYYY-MM-DD date") from None
     body = expand_site(content[boundary + len("\n---\n"):].strip(), site, html=True)
     if not body:
         raise ValueError(f"{source.relative_to(ROOT)}: fragment page has no HTML content")
@@ -170,7 +177,7 @@ def render_page(source, site):
         if rendered.count(token) != 1:
             raise ValueError(f"templates/base.html must contain exactly one {token}")
         rendered = rendered.replace(token, value)
-    return rendered
+    return rendered, metadata.get("lastmod")
 
 
 def srcset_urls(value):
@@ -371,13 +378,14 @@ def git_modification_dates(sources):
     return dates
 
 
-def write_sitemap(site, sources, rendered_pages):
+def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
     if not site["url"]:
         return
 
     dates = git_modification_dates(sources)
     redirects = redirect_sources()
     entries = []
+    missing_dates = 0
     for source in sources:
         if source.relative_to(ROOT) == Path("404.html"):
             continue
@@ -389,9 +397,11 @@ def write_sitemap(site, sources, rendered_pages):
         if parser.noindex or (parser.canonical and parser.canonical != url):
             continue
         entry = f"  <url>\n    <loc>{escape_html(url, quote=True)}</loc>"
-        lastmod = dates.get(source.relative_to(ROOT).as_posix())
+        lastmod = lastmod_overrides.get(source) or dates.get(source.relative_to(ROOT).as_posix())
         if lastmod:
             entry += f"\n    <lastmod>{lastmod}</lastmod>"
+        else:
+            missing_dates += 1
         entries.append(entry + "\n  </url>")
 
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -399,8 +409,8 @@ def write_sitemap(site, sources, rendered_pages):
     xml += "\n".join(entries) + ("\n" if entries else "") + "</urlset>\n"
     (OUTPUT / "sitemap.xml").write_text(xml, encoding="utf-8")
     print(f"Generated sitemap.xml with {len(entries)} URL(s)")
-    if len(dates) < len(sources):
-        print("Note: <lastmod> is omitted where complete Git modification history is unavailable")
+    if missing_dates:
+        print(f"Note: <lastmod> omitted for {missing_dates} URL(s) without a manual date or complete Git history")
 
 
 def main():
@@ -408,10 +418,14 @@ def main():
     sources = html_sources()
     check_conflicts(sources)
     rendered_pages = {}
+    lastmod_overrides = {}
     for source in sources:
-        rendered = render_page(source, site)
-        if rendered is not None:
+        page = render_page(source, site)
+        if page is not None:
+            rendered, lastmod = page
             rendered_pages[source] = rendered
+            if lastmod:
+                lastmod_overrides[source] = lastmod
     check_internal_links(sources, rendered_pages)
 
     if OUTPUT.is_symlink():
@@ -446,7 +460,7 @@ def main():
     if assets.is_dir():
         copytree(assets, OUTPUT / "assets", ignore=ignored_asset_files, dirs_exist_ok=True)
 
-    write_sitemap(site, sources, rendered_pages)
+    write_sitemap(site, sources, rendered_pages, lastmod_overrides)
 
     print("Static files copied to public/")
 
