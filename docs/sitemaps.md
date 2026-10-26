@@ -6,9 +6,19 @@ The sitemap includes the clean URLs of published HTML pages, including standalon
 
 ## Modification dates
 
-Each `<lastmod>` is the date of the most recent Git commit affecting that page's source HTML file, not the current build or deployment date. Dates use the `YYYY-MM-DD` format.
+A fragment page can specify an explicit modification date in its front matter:
 
-A complete Git history must be available to retrieve these dates. If the build uses a shallow checkout, runs outside a Git repository, or a page has no recorded commit, that page remains in the sitemap without `<lastmod>`. This avoids publishing misleading dates. Changes made only to shared templates or site settings do not update the source page's date.
+```yaml
+---
+title: About Us
+lang: en
+lastmod: 2026-10-25
+---
+```
+
+The `lastmod` field must be a real date in `YYYY-MM-DD` format. It takes priority over Git history and is used only for the sitemap, not as an HTML meta tag.
+
+Without that field, the builder uses the most recent Git commit date for the source HTML file. It never uses the build or deployment date. If Git history is missing or shallow, the URL remains in the sitemap without `<lastmod>`. Standalone HTML pages use Git dates because they have no front matter. Changes made only to shared templates or site settings do not update individual source dates.
 
 ## Example
 
