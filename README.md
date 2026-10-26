@@ -2,6 +2,10 @@
 
 A lightweight HTML-first boilerplate for building and deploying static websites with Cloudflare Workers. Keep pages, shared templates, and assets in Git while a small Python script assembles HTML and prepares deployment files. It supports clean URLs, SEO metadata, redirects, security headers, and optional XML sitemaps without requiring a frontend framework, database, or CMS.
 
+> [!WARNING]
+> **Under development:** This repository is for reference only and has not yet been tested on a live production site. Production testing is planned soon.
+
+
 ## Quick Start
 
 1. Set the site name and description in `site.json`; add the production HTTPS `url` when the domain is ready.
