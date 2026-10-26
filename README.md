@@ -4,9 +4,10 @@ A minimal HTML-first starter for building and deploying static sites with Cloudf
 
 ## Quick Start
 
-1. Set the site name and description in `site.json`, add the production HTTPS URL when known, then edit the homepage in `index.html` and add pages or assets as needed.
-2. Run `python3 build.py` to assemble content fragments into full HTML pages and generate `public/`. Do not edit generated files directly.
-3. Set a unique Worker `name` in `wrangler.jsonc`, then follow [Cloudflare Workers](docs/cloudflare-workers.md) to connect your repository and deploy.
+1. Set the site name and description in `site.json`; add the production HTTPS `url` when the domain is ready.
+2. Customize `index.html`, add pages as files such as `about.html` or folders such as `about/index.html`, and place images, stylesheets, and scripts in `assets/`. Edit `templates/` for shared layout changes.
+3. Run `python3 build.py`, review any warnings, and check the generated pages and assets in `public/`. Make corrections in the source files rather than editing `public/` directly.
+4. Set a unique Worker `name` in `wrangler.jsonc`, then follow [Cloudflare Workers](docs/cloudflare-workers.md) to connect the GitHub repository and deploy.
 
 Pages with `---` metadata at the top are assembled with `templates/base.html`, `templates/head.html`, and the shared header and footer. Complete HTML files without front matter are copied unchanged. See [Build Process](docs/build.md) for both formats.
 
