@@ -16,9 +16,13 @@ lastmod: 2026-10-25
 ---
 ```
 
-The `lastmod` field must be a real date in `YYYY-MM-DD` format. It takes priority over Git history and is used only for the sitemap, not as an HTML meta tag.
+The builder chooses each page's sitemap modification date in this order:
 
-Without that field, the builder uses the most recent Git commit date for the source HTML file. It never uses the build or deployment date. If Git history is missing or shallow, the URL remains in the sitemap without `<lastmod>`. Standalone HTML pages use Git dates because they have no front matter. Changes made only to shared templates or site settings do not update individual source dates.
+1. The explicit `lastmod` field, when provided on a fragment page. It must be a real `YYYY-MM-DD` date.
+2. Otherwise, the most recent Git commit date for that page's source HTML file.
+3. If neither is available, the URL remains in the sitemap without `<lastmod>`.
+
+`lastmod` is optional and affects only the sitemap, not HTML metadata. Standalone HTML pages use Git dates because they have no front matter. Missing or shallow Git history can leave some dates unavailable. The builder never substitutes the build or deployment date, and changes only to shared templates or site settings do not update individual source dates.
 
 ## Example
 
