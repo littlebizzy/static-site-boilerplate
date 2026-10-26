@@ -19,7 +19,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
-8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. `<lastmod>` dates come from Git history, not the build time; dates are omitted if the relevant history is unavailable.
+8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. A page's optional `lastmod` date takes priority over Git history; missing dates are omitted rather than replaced with the build time.
 
 ## Internal link checks
 
@@ -55,7 +55,7 @@ lang: en
 </main>
 ```
 
-The `title` and `lang` fields are required. `description`, `robots` (for example, `noindex`), `canonical`, and `image` are optional. Use an absolute, publicly accessible URL for `image`. Each field is a single `key: value` line; this is a small built-in parser, not full YAML. Unsupported or duplicate fields, missing required values, empty page content, and missing closing `---` stop the build.
+The `title` and `lang` fields are required. `description`, `robots` (for example, `noindex`), `canonical`, `image`, and `lastmod` (`YYYY-MM-DD` for the sitemap) are optional. Use an absolute, publicly accessible URL for `image`. Each field is a single `key: value` line; this is a small built-in parser, not full YAML. Unsupported or duplicate fields, missing required values, empty page content, and missing closing `---` stop the build.
 
 The builder reuses `title` for `og:title`, `description` for `og:description`, and the resolved canonical URL for `og:url`. It sets `og:type` to `website`, and includes `og:image` only when `image` is provided. It does not require an image or invent a canonical URL without a configured site URL or explicit override.
 
