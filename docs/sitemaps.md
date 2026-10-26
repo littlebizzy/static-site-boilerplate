@@ -38,4 +38,4 @@ The builder chooses each page's sitemap modification date in this order:
 
 The sitemap format supports up to **50,000 URLs or 50 MB uncompressed** per file. Sites beyond that size need split sitemaps and a sitemap index.
 
-Submit `https://your-domain/sitemap.xml` in Google Search Console or Bing Webmaster Tools. A `Sitemap:` entry in `robots.txt` is optional and is not added by the starter.
+Submit `https://your-domain/sitemap.xml` in Google Search Console or Bing Webmaster Tools. There is no need to link to the sitemap from normal pages or navigation. A `Sitemap:` entry in `robots.txt` is optional and is not added by the starter.
