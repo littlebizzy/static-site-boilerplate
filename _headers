@@ -2,6 +2,8 @@
 # Place this file in the deployed static assets directory.
 # Adjust the CSP if using inline code, third-party services, or embedded content.
 # Review HSTS before using this template on a domain without reliable HTTPS.
+# CSP may prevent browsers from styling XML sitemaps correctly.
+# If needed, exempt the sitemap URL using a path-specific ! Content-Security-Policy rule.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
