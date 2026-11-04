@@ -39,6 +39,8 @@ def load_site():
         raise ValueError("site.json sitemap_filename must be sitemap.xml or 12 lowercase letters/digits followed by .xml")
     if (ROOT / sitemap_filename).exists():
         raise ValueError(f"site.json sitemap_filename conflicts with root file: {sitemap_filename}")
+    if sitemap_filename != "sitemap.xml" and (ROOT / "sitemap.xml").exists():
+        raise ValueError("site.json custom sitemap_filename conflicts with root sitemap.xml")
     site["sitemap_filename"] = sitemap_filename
     return site
 
