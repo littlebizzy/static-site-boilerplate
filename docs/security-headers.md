@@ -20,6 +20,17 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 - Review `Strict-Transport-Security` before deploying. Only retain it when HTTPS is reliably available; browsers remember the setting until it expires.
 - Review framing restrictions if the site must be embedded elsewhere. `X-Frame-Options` and CSP `frame-ancestors` currently limit framing to the same origin.
 
+## XML sitemap display
+
+A strict site-wide CSP may prevent Chrome from styling its built-in XML tree viewer, even when the sitemap XML itself is valid. If you need an exception, Cloudflare's `_headers` rules support a generic XML match:
+
+```text
+/*.xml
+  ! Content-Security-Policy
+```
+
+This removes the CSP header from **every matching XML response**, not just the sitemap. It is an optional browser-display adjustment, not a requirement for search engines to read the XML. For an opaque sitemap filename, avoid a filename-specific rule that would advertise the path in `_headers`. After deployment, inspect the XML response headers and hard-refresh if the browser still shows cached styling behavior. See [XML Sitemaps](sitemaps.md).
+
 ## Verify
 
 1. Deploy the site, then open it in a browser.
