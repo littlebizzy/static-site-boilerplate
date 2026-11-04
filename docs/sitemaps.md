@@ -16,13 +16,9 @@ lastmod: 2026-10-25
 ---
 ```
 
-The builder chooses each page's sitemap modification date in this order:
+Only an explicit `lastmod` field on a fragment page adds a modification date. It must be a real `YYYY-MM-DD` date representing the last significant update to the page. Pages without an explicit date remain in the sitemap without `<lastmod>`.
 
-1. The explicit `lastmod` field, when provided on a fragment page. It must be a real `YYYY-MM-DD` date.
-2. Otherwise, the most recent Git commit date for that page's source HTML file.
-3. If neither is available, the URL remains in the sitemap without `<lastmod>`.
-
-`lastmod` is optional and affects only the sitemap, not HTML metadata. Standalone HTML pages use Git dates because they have no front matter. Missing or shallow Git history can leave some dates unavailable. The builder never substitutes the build or deployment date, and changes only to shared templates or site settings do not update individual source dates.
+`lastmod` is optional and affects only the sitemap, not HTML metadata. Standalone HTML pages have no front matter, so they have no sitemap modification date in this boilerplate. The builder does not derive dates from Git commits, file timestamps, or build/deployment times. Update a date when the page's main content, structured data, or relevant links change significantly, not for minor cosmetic edits.
 
 ## Example
 
