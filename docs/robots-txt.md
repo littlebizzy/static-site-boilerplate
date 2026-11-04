@@ -25,4 +25,10 @@ For a page you want excluded from search, serve it with a `noindex` robots meta 
 
 Open `https://example.com/robots.txt` after deployment to confirm the published rules. Use Google Search Console's URL Inspection tool to investigate crawling or indexing problems; note that a blocked URL cannot be inspected through a live fetch in the usual way.
 
-A `Sitemap:` directive is optional and is intentionally omitted from this boilerplate. See [XML Sitemaps](sitemaps.md).
+A `Sitemap:` directive is optional and is intentionally omitted from this boilerplate. To include one, add the following line to the root `robots.txt`, replacing the example domain with your production domain:
+
+```text
+Sitemap: https://example.com/sitemap.xml
+```
+
+The builder copies this file unchanged and never adds the directive automatically. See [XML Sitemaps](sitemaps.md) for sitemap generation details.
