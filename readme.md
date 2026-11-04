@@ -23,13 +23,13 @@ Use these guides to organize content and templates, build and deploy with Cloudf
 | --- | --- |
 | [File Structure](docs/file-structure.md) | Learn how source pages, templates, assets, drafts, and generated files are organized and published. |
 | [Content Management](docs/content-management.md) | Edit HTML content and page metadata, manage drafts, and reuse templates without installing a CMS. |
+| [HTML Metadata](docs/metadata.md) | Manage page titles, descriptions, canonical URLs, social previews, and structured data across shared templates. |
 | [Build Process](docs/build.md) | See how the Python builder assembles HTML, checks routes and assets, and prepares the deployment directory. |
 | [Cloudflare Workers](docs/cloudflare-workers.md) | Connect a GitHub repository to Cloudflare Workers, configure build settings, and deploy generated static assets. |
-| [Custom Domains](docs/domains.md) | Connect custom domains, enable HTTPS, and redirect alternate hostnames to your preferred canonical address. |
 | [Deploy Hooks](docs/deploy-hooks.md) | Create secure deploy hooks, trigger builds manually, and understand how hooks differ from watch-path filters. |
+| [Custom Domains](docs/domains.md) | Connect custom domains, enable HTTPS, and redirect alternate hostnames to your preferred canonical address. |
 | [Redirects](docs/redirects.md) | Set up permanent, temporary, and wildcard redirects in the root configuration file and verify URL changes. |
 | [404 Errors](docs/404-errors.md) | Customize missing-page responses while preserving correct HTTP statuses and avoiding misleading homepage redirects. |
-| [HTML Metadata](docs/metadata.md) | Manage page titles, descriptions, canonical URLs, social previews, and structured data across shared templates. |
 | [SEO](docs/seo.md) | Use clean internal links, unique metadata, indexing controls, and Search Console to keep pages discoverable. |
 | [Robots.txt](docs/robots-txt.md) | Configure crawler permissions, understand their limitations, and distinguish crawl rules from indexing controls. |
 | [XML Sitemaps](docs/sitemaps.md) | Generate canonical sitemap URLs, control modification dates, and submit the sitemap to search engines. |
