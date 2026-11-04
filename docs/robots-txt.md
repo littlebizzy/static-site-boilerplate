@@ -31,4 +31,4 @@ A `Sitemap:` directive is optional and is intentionally omitted from this boiler
 Sitemap: https://example.com/sitemap.xml
 ```
 
-The builder copies this file unchanged and never adds the directive automatically. See [XML Sitemaps](sitemaps.md) for sitemap generation details.
+The builder copies this file unchanged and never adds the directive automatically. If you choose the optional opaque sitemap filename, **do not add a `Sitemap:` directive**: submit the URL directly to search engines instead, and keep it out of other public discovery files. Omitting the directive reduces discoverability but does not make a public sitemap private. See [XML Sitemaps](sitemaps.md) for sitemap generation details.
