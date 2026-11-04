@@ -84,6 +84,16 @@ Common choices:
 
 The starter's placeholder site name and domain are not real entities. Its homepage and 404 page deliberately ship without JSON-LD; do not add generic schema solely to fill every page. Structured data must agree with the visible page and does not guarantee a rich result.
 
+### Dates for articles, guides, and posts
+
+Editorial dates serve a different purpose from sitemap modification dates:
+
+- **`datePublished`:** When the article was first published. Do not change it for later edits.
+- **`dateModified`:** When the article's content was last meaningfully updated.
+- **Sitemap `<lastmod>`:** When the page itself last changed significantly, including important content, structured data, or links. It may differ from the article's editorial update date.
+
+For genuine articles or blog posts, use appropriate `Article` or `BlogPosting` JSON-LD with accurate publication and modification dates, and show clear dates to readers when appropriate. Keep structured data and visible dates consistent; align `dateModified` with sitemap `<lastmod>` when they describe the same update. The boilerplate does **not** generate article dates or structured data from fragment `lastmod:` or standalone `last-modified` tags. Do not invent dates or add article schema to generic pages solely for SEO. See [Google's Article structured data guidance](https://developers.google.com/search/docs/appearance/structured-data/article) and [publication date guidance](https://developers.google.com/search/docs/appearance/publication-dates).
+
 ## Checks
 
 - **Indexing:** Search-indexable pages normally need no robots meta tag. Use `<meta name="robots" content="noindex">` where appropriate, and keep the URL crawlable.
