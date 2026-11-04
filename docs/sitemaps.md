@@ -16,9 +16,15 @@ lastmod: 2026-10-25
 ---
 ```
 
-Only an explicit `lastmod` field on a fragment page adds a modification date. It must be a real `YYYY-MM-DD` date representing the last significant update to the page. Pages without an explicit date remain in the sitemap without `<lastmod>`.
+Standalone HTML pages can specify the date with a tag inside their `<head>`:
 
-`lastmod` is optional and affects only the sitemap, not HTML metadata. Standalone HTML pages have no front matter, so they have no sitemap modification date in this boilerplate. The builder does not derive dates from Git commits, file timestamps, or build/deployment times. Update a date when the page's main content, structured data, or relevant links change significantly, not for minor cosmetic edits.
+```html
+<meta name="last-modified" content="2026-10-25">
+```
+
+Both methods require a valid `YYYY-MM-DD` date representing the page's last significant update. The builder rejects invalid or duplicate standalone-page date tags. Pages without an explicit date remain in the sitemap without `<lastmod>`.
+
+The fragment `lastmod` field affects only the sitemap and does not generate an HTML meta tag. The standalone `last-modified` tag is read by this builder, **not** a standard Google SEO meta tag; standalone HTML is copied unchanged. Dates are never inferred from Git commits, file timestamps, or build/deployment times. Update a date when the page's main content, structured data, or relevant links change significantly, not for minor cosmetic edits.
 
 ## Example
 
