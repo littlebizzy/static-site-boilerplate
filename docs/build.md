@@ -19,7 +19,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
-8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. A page's optional `lastmod` date takes priority over Git history; missing dates are omitted rather than replaced with the build time.
+8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. Only an explicit `lastmod` date is included for a page; dates are not inferred from Git history or build time.
 
 ## Internal link checks
 
