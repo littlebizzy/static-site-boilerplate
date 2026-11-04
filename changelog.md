@@ -3,7 +3,7 @@
 ## 0.1.2
 
 - Added optional standalone HTML sitemap dates using a `<meta name="last-modified" content="YYYY-MM-DD">` tag in the page's `<head>`.
-- Validated standalone dates and rejected duplicate tags, while keeping fragment `lastmod:` behavior unchanged and omitting dates when unspecified.
+- Validated standalone dates and rejected duplicate tags before cleaning build output, including on pages excluded from the sitemap; fragment `lastmod:` behavior remains unchanged, and dates are omitted when unspecified.
 - Updated sitemap, metadata, and build documentation to explain both date formats and their limitations.
 
 ## 0.1.1
