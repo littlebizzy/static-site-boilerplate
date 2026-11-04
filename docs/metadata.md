@@ -35,7 +35,7 @@ A standalone HTML page can supply a sitemap modification date with this optional
 <meta name="last-modified" content="2026-11-04">
 ```
 
-The builder validates the date as `YYYY-MM-DD` during source processing and adds it to the page's sitemap `<lastmod>` entry. Invalid or duplicate tags stop the build, even when the page is excluded from the sitemap. Without the tag, the date is omitted. This is builder-specific metadata, **not** a standard SEO meta tag recognized by Google. Standalone HTML is copied unchanged; the tag remains in the published document. See [XML Sitemaps](sitemaps.md).
+The builder validates the date as `YYYY-MM-DD` during source processing and adds it to the page's sitemap `<lastmod>` entry. Invalid or duplicate tags stop the build for scanned standalone HTML pages, including those omitted from the sitemap. Drafts are not scanned. Without the tag, the date is omitted. This is builder-specific metadata, **not** a standard SEO meta tag recognized by Google. Standalone HTML is copied unchanged; the tag remains in the published document. See [XML Sitemaps](sitemaps.md).
 
 ## Shared head template
 
