@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2](https://github.com/littlebizzy/static-site-boilerplate/releases/tag/0.1.2) — 2026-11-04
+
+- Added optional standalone HTML sitemap dates using a `<meta name="last-modified" content="YYYY-MM-DD">` tag in the page's `<head>`.
+- Validated standalone dates and rejected duplicate tags, while keeping fragment `lastmod:` behavior unchanged and omitting dates when unspecified.
+- Updated sitemap, metadata, and build documentation to explain both date formats and their limitations.
+
 ## [0.1.1](https://github.com/littlebizzy/static-site-boilerplate/releases/tag/0.1.1) — 2026-11-04
 
 - Changed sitemap `<lastmod>` generation to use only explicit `lastmod: YYYY-MM-DD` front matter. Pages without an explicit date remain in the sitemap without `<lastmod>`.
