@@ -22,14 +22,14 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 
 ## XML sitemap display
 
-A strict site-wide CSP may prevent Chrome from styling its built-in XML tree viewer, even when the sitemap XML itself is valid. The boilerplate enables this generic XML exception in `_headers` by default:
+A strict site-wide CSP may prevent Chrome from styling its built-in XML tree viewer, even when the sitemap XML itself is valid. The boilerplate keeps CSP on XML responses by default. To enable an optional generic XML exception, add this rule to the root `_headers` file:
 
 ```text
 /*.xml
   ! Content-Security-Policy
 ```
 
-This removes CSP from **every matching XML response**, not just the sitemap, while preserving the other security headers. The exception is enabled for browser display, not because search engines require it; remove the rule if you prefer CSP on XML responses. For an opaque sitemap filename, avoid a filename-specific rule that would advertise the path in `_headers`. After deployment, inspect the XML response headers and hard-refresh if the browser still shows cached styling behavior. See [XML Sitemaps](sitemaps.md).
+When added, this removes CSP from **every matching XML response**, not just the sitemap, while preserving the other security headers. This is an optional browser-display adjustment, not a requirement for search engines; omit the rule to retain CSP on XML responses. For an opaque sitemap filename, avoid a filename-specific rule that would advertise the path in `_headers`. After deployment, inspect the XML response headers and hard-refresh if the browser still shows cached styling behavior. See [XML Sitemaps](sitemaps.md).
 
 ## Verify
 
