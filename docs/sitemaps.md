@@ -30,10 +30,12 @@ The fragment `lastmod` field affects only the sitemap and does not generate an H
 
 The optional `sitemap_filename` field in `site.json` controls the generated file's name. The starter uses `"sitemap_filename": "sitemap.xml"`, and omitting the field also keeps that default.
 
-For reduced casual discovery of the URL list, you may instead set a **fixed, randomly chosen 12-character filename** consisting of lowercase letters and digits, followed by `.xml`:
+For reduced casual discovery of the URL list, you may instead set a **fixed, randomly chosen 12-character filename** consisting of lowercase letters and digits, followed by `.xml`. Add the field to your existing `site.json` alongside its other settings:
 
 ```json
-"sitemap_filename": "a7k2m9q4v6r8.xml"
+{
+  "sitemap_filename": "a7k2m9q4v6r8.xml"
+}
 ```
 
 This 12-character convention is a boilerplate choice, not a sitemap protocol requirement. The build accepts only `sitemap.xml` or this exact lowercase alphanumeric format, rejects directory paths and invalid types, and stops before cleaning `public/` if the name conflicts with a root static file. Choose a filename once; do not rotate it on each deployment.
