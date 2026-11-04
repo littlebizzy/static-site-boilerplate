@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Increased the default HTTPS HSTS `max-age` from six months (`15768000`) to one year (`31536000`).
+- Enabled the generic `/*.xml` CSP exception by default, preserving the other security headers on XML responses.
+- Updated security-header documentation to reflect the current defaults.
+
 ## 0.1.3
 
 - Added optional `sitemap_filename` configuration in `site.json`, retaining `sitemap.xml` by default and accepting fixed 12-character lowercase alphanumeric `.xml` names.
