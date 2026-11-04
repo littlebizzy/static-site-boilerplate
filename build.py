@@ -18,6 +18,7 @@ STATIC_FILES = ("_headers", "_redirects", "robots.txt")
 UNPUBLISHED_FOLDERS = {"drafts", "templates"}
 EXCLUDED_DIRS = {"assets", "docs", "public"} | UNPUBLISHED_FOLDERS
 ROOT_ASSET_EXTENSIONS = {".ico", ".svg", ".png", ".jpg", ".jpeg", ".gif", ".webmanifest", ".xml", ".txt", ".pdf", ".css", ".js"}
+SITEMAP_FILENAME_PATTERN = compile(r"[a-z0-9]{12}\.xml")
 
 
 def load_site():
@@ -31,6 +32,14 @@ def load_site():
         url = urlsplit(site["url"])
         if url.scheme != "https" or not url.netloc or url.path not in ("", "/") or url.query or url.fragment:
             raise ValueError("site.json url must be an HTTPS site root, such as https://example.com/")
+    sitemap_filename = site.get("sitemap_filename", "sitemap.xml")
+    if not isinstance(sitemap_filename, str) or (
+        sitemap_filename != "sitemap.xml" and not SITEMAP_FILENAME_PATTERN.fullmatch(sitemap_filename)
+    ):
+        raise ValueError("site.json sitemap_filename must be sitemap.xml or 12 lowercase letters/digits followed by .xml")
+    if (ROOT / sitemap_filename).exists():
+        raise ValueError(f"site.json sitemap_filename conflicts with root file: {sitemap_filename}")
+    site["sitemap_filename"] = sitemap_filename
     return site
 
 
@@ -408,8 +417,8 @@ def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     xml += "\n".join(entries) + ("\n" if entries else "") + "</urlset>\n"
-    (OUTPUT / "sitemap.xml").write_text(xml, encoding="utf-8")
-    print(f"Generated sitemap.xml with {len(entries)} URL(s)")
+    (OUTPUT / site["sitemap_filename"]).write_text(xml, encoding="utf-8")
+    print(f"Generated {site['sitemap_filename']} with {len(entries)} URL(s)")
     if missing_dates:
         print(f"Note: <lastmod> omitted for {missing_dates} URL(s) without an explicit date")
 
