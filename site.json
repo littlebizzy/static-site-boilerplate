@@ -1,5 +1,6 @@
 {
   "name": "Site Name",
   "url": "",
+  "sitemap_filename": "sitemap.xml",
   "description": "A simple starting point for a static website built with HTML and MiddleClass CSS."
 }
