@@ -6,6 +6,8 @@ Run `python3 build.py` from the repository root. Cloudflare Workers uses the sam
 
 Set the site name and default description in the root `site.json`. Its `url` field is optional: leave it empty until the production hostname is known, then use the site's HTTPS root URL (such as `https://example.com/`). The configuration file itself is not published.
 
+The optional `sitemap_filename` field in `site.json` controls the generated XML sitemap's filename. It defaults to `sitemap.xml` when omitted; other values must use exactly 12 lowercase letters/digits followed by `.xml`, without a directory path. See [XML Sitemaps](sitemaps.md) for validation and submission guidance.
+
 The fragment builder expands `{{ site_name }}` and `{{ site_description }}` in page metadata, fragment content, and shared header/footer templates. Site text is escaped for HTML output. A page's own title or description can use custom text instead; the site description is not automatically repeated on every page.
 
 When `site.json` has a production URL, fragment pages automatically receive canonical URLs matching their published routes, including the distinct slash forms of directory indexes and standalone `.html` filenames. An explicit `canonical` field overrides the automatic value. The root `404.html` has no automatic canonical. When `url` is empty, no canonical is invented. Standalone full HTML documents remain untouched and manage their own metadata.
@@ -19,7 +21,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
-8. Generates `public/sitemap.xml` by default for published indexable pages when `site.json` has a production URL. A fixed opaque filename can be selected manually in `build.py` as described in [XML Sitemaps](sitemaps.md). Modification dates require explicit fragment front matter or a standalone HTML `<meta name="last-modified">` tag; dates are not inferred from Git history or build time.
+8. Generates `public/sitemap.xml` by default for published indexable pages when `site.json` has a production URL. An optional `sitemap_filename` setting changes the output filename without editing `build.py`. Modification dates require explicit fragment front matter or a standalone HTML `<meta name="last-modified">` tag; dates are not inferred from Git history or build time.
 
 ## Internal link checks
 
