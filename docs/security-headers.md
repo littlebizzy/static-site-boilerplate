@@ -8,7 +8,7 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 | `Referrer-Policy: strict-origin-when-cross-origin` | Limits referrer information sent to other sites. |
 | `X-Frame-Options: SAMEORIGIN` | Restricts framing by other origins. |
 | `Permissions-Policy` | Disables camera, microphone, and geolocation access by default. |
-| `Strict-Transport-Security` | Tells browsers to use HTTPS on subsequent visits for six months. |
+| `Strict-Transport-Security` | Tells browsers to use HTTPS on subsequent visits for one year (`max-age=31536000`). |
 | `Content-Security-Policy` | Restricts where scripts, styles, images, and other resources may load from. |
 
 ## Before deploying
@@ -22,14 +22,14 @@ The root `_headers` file sets HTTP response headers for static assets deployed t
 
 ## XML sitemap display
 
-A strict site-wide CSP may prevent Chrome from styling its built-in XML tree viewer, even when the sitemap XML itself is valid. If you need an exception, Cloudflare's `_headers` rules support a generic XML match:
+A strict site-wide CSP may prevent Chrome from styling its built-in XML tree viewer, even when the sitemap XML itself is valid. The boilerplate enables this generic XML exception in `_headers` by default:
 
 ```text
 /*.xml
   ! Content-Security-Policy
 ```
 
-This removes the CSP header from **every matching XML response**, not just the sitemap. It is an optional browser-display adjustment, not a requirement for search engines to read the XML. For an opaque sitemap filename, avoid a filename-specific rule that would advertise the path in `_headers`. After deployment, inspect the XML response headers and hard-refresh if the browser still shows cached styling behavior. See [XML Sitemaps](sitemaps.md).
+This removes CSP from **every matching XML response**, not just the sitemap, while preserving the other security headers. The exception is enabled for browser display, not because search engines require it; remove the rule if you prefer CSP on XML responses. For an opaque sitemap filename, avoid a filename-specific rule that would advertise the path in `_headers`. After deployment, inspect the XML response headers and hard-refresh if the browser still shows cached styling behavior. See [XML Sitemaps](sitemaps.md).
 
 ## Verify
 
