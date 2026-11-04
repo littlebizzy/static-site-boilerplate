@@ -19,7 +19,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
-8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. Modification dates require explicit fragment front matter or a standalone HTML `<meta name="last-modified">` tag; dates are not inferred from Git history or build time.
+8. Generates `public/sitemap.xml` by default for published indexable pages when `site.json` has a production URL. A fixed opaque filename can be selected manually in `build.py` as described in [XML Sitemaps](sitemaps.md). Modification dates require explicit fragment front matter or a standalone HTML `<meta name="last-modified">` tag; dates are not inferred from Git history or build time.
 
 ## Internal link checks
 
