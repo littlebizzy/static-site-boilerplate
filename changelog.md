@@ -3,8 +3,6 @@
 ## 0.1.4
 
 - Increased the default HTTPS HSTS `max-age` from six months (`15768000`) to one year (`31536000`).
-- Retained CSP on XML responses by default; the generic `/*.xml` exception remains optional.
-- Updated security-header documentation to reflect the current defaults.
 
 ## 0.1.3
 
