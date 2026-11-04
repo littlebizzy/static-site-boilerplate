@@ -1,18 +1,18 @@
 # Changelog
 
-## [0.1.2](https://github.com/littlebizzy/static-site-boilerplate/releases/tag/0.1.2) — 2026-11-04
+## 0.1.2
 
 - Added optional standalone HTML sitemap dates using a `<meta name="last-modified" content="YYYY-MM-DD">` tag in the page's `<head>`.
 - Validated standalone dates and rejected duplicate tags, while keeping fragment `lastmod:` behavior unchanged and omitting dates when unspecified.
 - Updated sitemap, metadata, and build documentation to explain both date formats and their limitations.
 
-## [0.1.1](https://github.com/littlebizzy/static-site-boilerplate/releases/tag/0.1.1) — 2026-11-04
+## 0.1.1
 
 - Changed sitemap `<lastmod>` generation to use only explicit `lastmod: YYYY-MM-DD` front matter. Pages without an explicit date remain in the sitemap without `<lastmod>`.
 - Removed the automatic Git commit-date fallback and updated the build, metadata, and sitemap documentation accordingly.
 - Added comments to `_headers` explaining that a path-specific CSP exception may be needed for XML sitemap styling. No exception is enabled by default.
 
-## [0.1.0](https://github.com/littlebizzy/static-site-boilerplate/releases/tag/0.1.0) — 2026-11-04
+## 0.1.0
 
 - Initial HTML-first static site boilerplate for Cloudflare Workers, supporting both metadata-based fragments and standalone HTML pages.
 - Added reusable page templates, clean URLs, per-page SEO metadata, automatic XML sitemaps, redirects, and security headers.
