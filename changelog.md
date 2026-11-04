@@ -3,7 +3,7 @@
 ## 0.1.3
 
 - Added optional `sitemap_filename` configuration in `site.json`, retaining `sitemap.xml` by default and accepting fixed 12-character lowercase alphanumeric `.xml` names.
-- Validate custom filenames and root-file collisions before cleaning build output; report the selected filename in build logs.
+- Validated custom filenames and root-file collisions before cleaning build output, including a root `sitemap.xml` alongside a custom filename; the build log reports the selected filename.
 - Added sitemap filename regression tests and updated build and sitemap documentation. The generic XML CSP exception remains optional, not enabled by default.
 
 ## 0.1.2
