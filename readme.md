@@ -41,3 +41,4 @@ Use these guides to organize content and templates, build and deploy with Cloudf
 | [Analytics](docs/analytics.md) | Add optional Cloudflare Web Analytics and understand how browser measurements differ from Worker request metrics. |
 | [Launch Checklist](docs/launch-checklist.md) | Review build output, domains, redirects, metadata, indexing controls, and security settings before going live. |
 | [Agent Guidelines](agents.md) | Follow the repository's editing, validation, and one-file-per-commit conventions when making automated changes. |
+| [Changelog](changelog.md) | Review tagged releases and the notable changes in each version. |
