@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Added optional `sitemap_filename` configuration in `site.json`, retaining `sitemap.xml` by default and accepting fixed 12-character lowercase alphanumeric `.xml` names.
+- Validate custom filenames and root-file collisions before cleaning build output; report the selected filename in build logs.
+- Added sitemap filename regression tests and updated build and sitemap documentation. The generic XML CSP exception remains optional, not enabled by default.
+
 ## 0.1.2
 
 - Added optional standalone HTML sitemap dates using a `<meta name="last-modified" content="YYYY-MM-DD">` tag in the page's `<head>`.
