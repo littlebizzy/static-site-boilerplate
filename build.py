@@ -338,15 +338,28 @@ class SitemapParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.noindex = False
         self.canonical = None
+        self.in_head = False
+        self.lastmod_dates = []
 
     def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag == "head":
+            self.in_head = True
         attributes = dict(attrs)
-        if tag.lower() == "meta" and (attributes.get("name") or "").lower() in {"robots", "googlebot"}:
-            directives = (attributes.get("content") or "").lower().split(",")
-            if any(directive.strip() == "noindex" for directive in directives):
-                self.noindex = True
-        if tag.lower() == "link" and "canonical" in (attributes.get("rel") or "").lower().split():
+        if tag == "meta":
+            name = (attributes.get("name") or "").lower()
+            if name in {"robots", "googlebot"}:
+                directives = (attributes.get("content") or "").lower().split(",")
+                if any(directive.strip() == "noindex" for directive in directives):
+                    self.noindex = True
+            if self.in_head and name == "last-modified":
+                self.lastmod_dates.append(attributes.get("content") or "")
+        if tag == "link" and "canonical" in (attributes.get("rel") or "").lower().split():
             self.canonical = attributes.get("href")
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "head":
+            self.in_head = False
 
 
 def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
@@ -366,8 +379,17 @@ def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
         parser.feed(rendered_pages.get(source) or source.read_text(encoding="utf-8"))
         if parser.noindex or (parser.canonical and parser.canonical != url):
             continue
-        entry = f"  <url>\n    <loc>{escape_html(url, quote=True)}</loc>"
         lastmod = lastmod_overrides.get(source)
+        if source not in rendered_pages and parser.lastmod_dates:
+            if len(parser.lastmod_dates) != 1:
+                raise ValueError(f"{source.relative_to(ROOT)}: duplicate last-modified meta tags")
+            lastmod = parser.lastmod_dates[0]
+            try:
+                if date.fromisoformat(lastmod).isoformat() != lastmod:
+                    raise ValueError()
+            except ValueError:
+                raise ValueError(f"{source.relative_to(ROOT)}: last-modified must be a valid YYYY-MM-DD date") from None
+        entry = f"  <url>\n    <loc>{escape_html(url, quote=True)}</loc>"
         if lastmod:
             entry += f"\n    <lastmod>{lastmod}</lastmod>"
         else:
