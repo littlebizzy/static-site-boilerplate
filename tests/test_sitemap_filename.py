@@ -66,6 +66,11 @@ class SitemapFilenameTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "conflicts with root file"):
             self.write_site(sitemap_filename=filename)
 
+    def test_custom_filename_rejects_root_default_sitemap(self):
+        (self.root / "sitemap.xml").write_text("<existing/>", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "conflicts with root sitemap.xml"):
+            self.write_site(sitemap_filename="a7k2m9q4v6r8.xml")
+
     def test_filename_is_validated_without_production_url(self):
         with self.assertRaises(ValueError):
             self.write_site(url="", sitemap_filename="../a7k2m9q4v6r8.xml")
