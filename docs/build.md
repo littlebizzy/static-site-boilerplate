@@ -67,7 +67,7 @@ An HTML file without a starting `---` block is copied to `public/` unchanged. Us
 
 Both formats use the same file paths and clean URLs. The starter `index.html` and `404.html` demonstrate fragments; standalone files can coexist in any publishable directory.
 
-To include a modification date in the sitemap for a standalone page, add `<meta name="last-modified" content="YYYY-MM-DD">` inside its `<head>`. The builder validates the date and rejects duplicate tags; it does not remove the tag from the published HTML. This is builder-specific metadata, not a standard search-engine meta tag. See [XML Sitemaps](sitemaps.md).
+To include a modification date in the sitemap for a standalone page, add `<meta name="last-modified" content="YYYY-MM-DD">` inside its `<head>`. The builder validates dates and rejects duplicate tags during source processing, before cleaning `public/`, even if the page is excluded from the sitemap or no production URL is configured. The tag remains in the published HTML; it is builder-specific metadata, not a standard search-engine meta tag. See [XML Sitemaps](sitemaps.md).
 
 Fragment content is inserted **before** the shared footer. Place scripts that must run after the footer in the base template after `{{ footer }}`, or load appropriate external scripts with `defer`. Template errors stop the build before `public/` is cleaned. Link checks examine assembled HTML for fragments, so their warning line numbers refer to generated output.
 
