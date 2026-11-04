@@ -9,7 +9,6 @@ from pathlib import Path
 from posixpath import normpath
 from re import compile, escape, finditer, search
 from shutil import copy2, copytree, rmtree
-from subprocess import run
 from urllib.parse import quote, unquote, urlsplit
 
 
@@ -350,39 +349,10 @@ class SitemapParser(HTMLParser):
             self.canonical = attributes.get("href")
 
 
-def git_modification_dates(sources):
-    """Use committed source dates, never checkout file times or build time."""
-    try:
-        shallow = run(["git", "rev-parse", "--is-shallow-repository"], cwd=ROOT, capture_output=True, text=True)
-        if shallow.returncode != 0 or shallow.stdout.strip() == "true":
-            return {}
-        history = run(
-            ["git", "log", "--format=SITEMAP_DATE:%cs", "--name-only", "--diff-filter=ACMR", "--", "."],
-            cwd=ROOT, capture_output=True, text=True,
-        )
-    except OSError:
-        return {}
-    if history.returncode != 0:
-        return {}
-
-    wanted = {source.relative_to(ROOT).as_posix() for source in sources}
-    dates = {}
-    current_date = None
-    for line in history.stdout.splitlines():
-        if line.startswith("SITEMAP_DATE:"):
-            current_date = line[len("SITEMAP_DATE:"):]
-        elif line in wanted and line not in dates and current_date:
-            dates[line] = current_date
-            if len(dates) == len(wanted):
-                break
-    return dates
-
-
 def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
     if not site["url"]:
         return
 
-    dates = git_modification_dates(sources)
     redirects = redirect_sources()
     entries = []
     missing_dates = 0
@@ -397,7 +367,7 @@ def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
         if parser.noindex or (parser.canonical and parser.canonical != url):
             continue
         entry = f"  <url>\n    <loc>{escape_html(url, quote=True)}</loc>"
-        lastmod = lastmod_overrides.get(source) or dates.get(source.relative_to(ROOT).as_posix())
+        lastmod = lastmod_overrides.get(source)
         if lastmod:
             entry += f"\n    <lastmod>{lastmod}</lastmod>"
         else:
@@ -410,7 +380,7 @@ def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
     (OUTPUT / "sitemap.xml").write_text(xml, encoding="utf-8")
     print(f"Generated sitemap.xml with {len(entries)} URL(s)")
     if missing_dates:
-        print(f"Note: <lastmod> omitted for {missing_dates} URL(s) without a manual date or complete Git history")
+        print(f"Note: <lastmod> omitted for {missing_dates} URL(s) without an explicit date")
 
 
 def main():
