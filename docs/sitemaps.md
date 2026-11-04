@@ -26,16 +26,23 @@ Both methods require a valid `YYYY-MM-DD` date representing the page's last sign
 
 The fragment `lastmod` field affects only the sitemap and does not generate an HTML meta tag. The standalone `last-modified` tag is read by this builder, **not** a standard Google SEO meta tag; standalone HTML is copied unchanged. Dates are never inferred from Git commits, file timestamps, or build/deployment times. Update a date when the page's main content, structured data, or relevant links change significantly, not for minor cosmetic edits.
 
-## Optional opaque filename
+## Sitemap filename
 
-The standard `sitemap.xml` name is the default and works well for most sites. If you want to reduce casual discovery of the URL list, you may instead use a **fixed, randomly chosen 12-character filename** consisting of lowercase letters and digits, followed by `.xml`. Twelve characters is a project convention, not a sitemap protocol requirement. Choose the name once; do not rotate it with every build.
+The optional `sitemap_filename` field in `site.json` controls the generated file's name. The starter uses `"sitemap_filename": "sitemap.xml"`, and omitting the field also keeps that default.
 
-1. In `build.py`, find `write_sitemap()` and change the filename used by `(OUTPUT / "sitemap.xml").write_text(...)` to your chosen name. Update its printed generation message to use the same name.
-2. Run `python3 build.py` and check that `public/` contains the renamed sitemap, with no leftover `sitemap.xml`. Do not publish a second copy or a redirect from the default name.
-3. Submit the exact new URL directly in Google Search Console or Bing Webmaster Tools. Do not announce the opaque URL through `robots.txt`, public HTML, redirects, manifests, `_headers`, or other deployed files.
-4. If the site's CSP interferes with a browser's built-in XML viewer, a generic `/*.xml` rule with `! Content-Security-Policy` in `_headers` can address that without naming the sitemap. It removes CSP for **all** matching XML files, so review that scope; see [Security Headers](security-headers.md).
+For reduced casual discovery of the URL list, you may instead set a **fixed, randomly chosen 12-character filename** consisting of lowercase letters and digits, followed by `.xml`:
 
-An opaque name only reduces discoverability: the sitemap remains publicly accessible to anyone who knows its URL, and the filename is visible in `build.py` if the source repository is public. It is **not** authentication or protection for sensitive URLs or content.
+```json
+"sitemap_filename": "a7k2m9q4v6r8.xml"
+```
+
+This 12-character convention is a boilerplate choice, not a sitemap protocol requirement. The build accepts only `sitemap.xml` or this exact lowercase alphanumeric format, rejects directory paths and invalid types, and stops before cleaning `public/` if the name conflicts with a root static file. Choose a filename once; do not rotate it on each deployment.
+
+1. Set `sitemap_filename` in `site.json`, then run `python3 build.py`. Confirm that `public/` contains the selected file and no outdated `sitemap.xml` copy.
+2. Submit the exact generated URL directly in Google Search Console or Bing Webmaster Tools. Do not disclose an opaque filename in `robots.txt`, public HTML, redirects, manifests, `_headers`, or other deployed files.
+3. If a site's CSP interferes with a browser's built-in XML viewer, a generic `/*.xml` rule with `! Content-Security-Policy` in `_headers` can address that without naming the sitemap. It removes CSP for **all** matching XML files and is intentionally not enabled by default; see [Security Headers](security-headers.md).
+
+An opaque name only reduces discoverability: the sitemap remains publicly accessible to anyone who knows its URL, and the configured filename is visible in `site.json` if the source repository is public. It is **not** authentication or protection for sensitive URLs or content.
 
 ## Example
 
