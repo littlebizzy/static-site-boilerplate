@@ -19,7 +19,7 @@ When `site.json` has a production URL, fragment pages automatically receive cano
 5. Assembles pages beginning with front-matter metadata using the shared templates and copies other publishable HTML unchanged, preserving their paths.
 6. Copies `_headers`, `_redirects`, and `robots.txt` when present.
 7. Copies the optional `assets/` directory and supported root-level static files (`.ico`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.webmanifest`, `.xml`, `.txt`, `.pdf`, `.css`, `.js`), excluding files and directories within `assets/` whose names begin with `_` or `.`.
-8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. Only an explicit `lastmod` date is included for a page; dates are not inferred from Git history or build time.
+8. Generates `public/sitemap.xml` for published indexable pages when `site.json` has a production URL. Modification dates require explicit fragment front matter or a standalone HTML `<meta name="last-modified">` tag; dates are not inferred from Git history or build time.
 
 ## Internal link checks
 
@@ -66,6 +66,8 @@ The builder inserts page metadata into `templates/head.html` and page HTML into 
 An HTML file without a starting `---` block is copied to `public/` unchanged. Use this for self-contained pages that already include `<!doctype html>`, `<html>`, `<head>`, and `<body>`. No template parsing, reordering, or shared header/footer injection occurs. If the page needs shared navigation or metadata, include those elements in the source yourself.
 
 Both formats use the same file paths and clean URLs. The starter `index.html` and `404.html` demonstrate fragments; standalone files can coexist in any publishable directory.
+
+To include a modification date in the sitemap for a standalone page, add `<meta name="last-modified" content="YYYY-MM-DD">` inside its `<head>`. The builder validates the date and rejects duplicate tags; it does not remove the tag from the published HTML. This is builder-specific metadata, not a standard search-engine meta tag. See [XML Sitemaps](sitemaps.md).
 
 Fragment content is inserted **before** the shared footer. Place scripts that must run after the footer in the base template after `{{ footer }}`, or load appropriate external scripts with `defer`. Template errors stop the build before `public/` is cleaned. Link checks examine assembled HTML for fragments, so their warning line numbers refer to generated output.
 
