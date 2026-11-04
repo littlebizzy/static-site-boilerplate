@@ -362,6 +362,24 @@ class SitemapParser(HTMLParser):
             self.in_head = False
 
 
+def read_standalone_lastmod(source):
+    parser = SitemapParser()
+    parser.feed(source.read_text(encoding="utf-8"))
+
+    if len(parser.lastmod_dates) > 1:
+        raise ValueError(f"{source.relative_to(ROOT)}: duplicate last-modified meta tags")
+    if not parser.lastmod_dates:
+        return None
+
+    lastmod = parser.lastmod_dates[0]
+    try:
+        if date.fromisoformat(lastmod).isoformat() != lastmod:
+            raise ValueError()
+    except ValueError:
+        raise ValueError(f"{source.relative_to(ROOT)}: last-modified must be a valid YYYY-MM-DD date") from None
+    return lastmod
+
+
 def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
     if not site["url"]:
         return
@@ -380,15 +398,6 @@ def write_sitemap(site, sources, rendered_pages, lastmod_overrides):
         if parser.noindex or (parser.canonical and parser.canonical != url):
             continue
         lastmod = lastmod_overrides.get(source)
-        if source not in rendered_pages and parser.lastmod_dates:
-            if len(parser.lastmod_dates) != 1:
-                raise ValueError(f"{source.relative_to(ROOT)}: duplicate last-modified meta tags")
-            lastmod = parser.lastmod_dates[0]
-            try:
-                if date.fromisoformat(lastmod).isoformat() != lastmod:
-                    raise ValueError()
-            except ValueError:
-                raise ValueError(f"{source.relative_to(ROOT)}: last-modified must be a valid YYYY-MM-DD date") from None
         entry = f"  <url>\n    <loc>{escape_html(url, quote=True)}</loc>"
         if lastmod:
             entry += f"\n    <lastmod>{lastmod}</lastmod>"
@@ -416,6 +425,10 @@ def main():
         if page is not None:
             rendered, lastmod = page
             rendered_pages[source] = rendered
+            if lastmod:
+                lastmod_overrides[source] = lastmod
+        else:
+            lastmod = read_standalone_lastmod(source)
             if lastmod:
                 lastmod_overrides[source] = lastmod
     check_internal_links(sources, rendered_pages)
