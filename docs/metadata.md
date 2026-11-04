@@ -27,6 +27,16 @@ Open Graph tags are generated automatically: `og:title` uses `title`, `og:descri
 
 The shared head adds `<meta name="twitter:card" content="summary">` for a simple link preview. It reuses the existing Open Graph title and description, without duplicate Twitter-specific fields or a required image. The final preview appearance depends on the platform.
 
+## Standalone HTML modification dates
+
+A standalone HTML page can supply a sitemap modification date with this optional tag in its `<head>`:
+
+```html
+<meta name="last-modified" content="2026-11-04">
+```
+
+The builder validates the date as `YYYY-MM-DD` and adds it to the page's sitemap `<lastmod>` entry. Invalid or duplicate tags stop sitemap generation. Without the tag, the date is omitted. This is builder-specific metadata, **not** a standard SEO meta tag recognized by Google. Standalone HTML is copied unchanged; the tag remains in the published document. See [XML Sitemaps](sitemaps.md).
+
 ## Shared head template
 
 A shared metadata template is recommended for multi-page sites: common markup stays consistent, while each page supplies its own values. This boilerplate uses `templates/head.html` for the charset, viewport, title, favicon, stylesheet, Twitter summary card, and `{{ metadata }}` placeholder. `build.py` fills the page-specific title, description, robots, canonical, and Open Graph tags from front matter and the configured site URL.
